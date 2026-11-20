@@ -1,1 +1,17 @@
 @import "tailwindcss";
+
+@theme {
+  --font-display: Didot, "Bodoni 72", "Bodoni MT", "Playfair Display", Georgia, serif;
+  --color-paper: #f4efe6;
+}
+
+.crt {
+  background:
+    repeating-linear-gradient(
+      90deg,
+      rgb(255 0 0 / 0.04) 0 1px,
+      rgb(0 255 0 / 0.04) 1px 2px,
+      rgb(0 0 255 / 0.04) 2px 3px
+    ),
+    repeating-linear-gradient(0deg, rgb(0 0 0 / 0.3) 0 1px, transparent 1px 3px);
+}

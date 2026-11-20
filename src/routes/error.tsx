@@ -9,9 +9,14 @@ export default function ErrorPage() {
       : "Unknown error"
 
   return (
-    <div>
-      <h1>Something went wrong</h1>
-      <p>{message}</p>
+    <div className="grid min-h-screen place-items-center bg-neutral-950 p-6 text-center text-neutral-300">
+      <div>
+        <h1 className="font-display text-5xl text-[#f4efe6]">Something went wrong</h1>
+        <p className="mt-4 text-neutral-500">{message}</p>
+        <a href="/" className="mt-8 inline-block text-[#f4efe6] underline underline-offset-4">
+          Back home
+        </a>
+      </div>
     </div>
   )
 }

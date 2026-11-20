@@ -11,6 +11,8 @@
     "lint": "oxlint"
   },
   "dependencies": {
+    "@convex-dev/auth": "2.1.0",
+    "@convex-dev/resend": "0.2.10",
     "convex": "1.51.0",
     "react": "19.3.1",
     "react-dom": "19.3.1",
