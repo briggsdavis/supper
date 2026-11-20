@@ -3,7 +3,9 @@
   "version": "0.1.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "bun run --parallel dev:vite dev:convex",
+    "dev:vite": "vite",
+    "dev:convex": "convex dev",
     "build": "tsc -b && vite build",
     "preview": "vite preview",
     "lint": "oxlint"
