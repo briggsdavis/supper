@@ -3,7 +3,7 @@
   "configVersion": 1,
   "workspaces": {
     "": {
-      "name": "te",
+      "name": "supper",
       "dependencies": {
         "convex": "1.51.0",
         "react": "19.3.1",

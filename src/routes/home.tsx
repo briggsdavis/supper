@@ -1,3 +1,3 @@
 export default function Home() {
-  return <h1 className="text-2xl font-semibold">te</h1>
+  return <h1>Scenes and Supper</h1>
 }

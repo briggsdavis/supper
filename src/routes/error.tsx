@@ -9,9 +9,9 @@ export default function ErrorPage() {
       : "Unknown error"
 
   return (
-    <div className="p-8">
-      <h1 className="text-2xl font-semibold">Something went wrong</h1>
-      <p className="mt-2 text-gray-600">{message}</p>
+    <div>
+      <h1>Something went wrong</h1>
+      <p>{message}</p>
     </div>
   )
 }
