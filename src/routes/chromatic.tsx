@@ -840,7 +840,7 @@ function SplitDemo({ text }: { text: string }) {
     <div
       onPointerMove={move}
       onPointerLeave={() => set(4, 1)}
-      className="absolute inset-0 @container"
+      className="@container absolute inset-0"
     >
       <svg className="absolute size-0">
         <filter
@@ -911,7 +911,7 @@ function FoilCardDemo({ text }: { text: string }) {
     >
       <div
         ref={card}
-        className="foil-card relative aspect-[5/7] w-[38%] overflow-hidden rounded-2xl shadow-2xl shadow-black/60 @container"
+        className="foil-card @container relative aspect-[5/7] w-[38%] overflow-hidden rounded-2xl shadow-2xl shadow-black/60"
       >
         <div className="absolute inset-0 flex flex-col justify-between p-[7cqw]">
           <span className="foil-text text-[7cqw] font-bold tracking-[0.3em] uppercase">Scenes</span>

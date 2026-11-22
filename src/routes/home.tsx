@@ -1,4 +1,5 @@
 import { useQuery } from "convex/react"
+import { useEffect, useRef } from "react"
 import { Link } from "react-router"
 import { api } from "../../convex/_generated/api"
 import { useMe } from "../components/auth.tsx"
@@ -8,26 +9,52 @@ import { ButtonLink, Page, Poster } from "../components/ui.tsx"
 import { createChromeCutlery } from "../effects/chrome-cutlery.ts"
 import { longDate, money, time, TODAY } from "../lib.ts"
 
+const morph = { value: 0 }
+const createHeroCutlery = (canvas: HTMLCanvasElement) =>
+  createChromeCutlery(canvas, "flame", false, () => morph.value, 0.14, true)
+
 export default function Home() {
   const events = useQuery(api.events.upcoming, { after: TODAY })
   const recipes = useQuery(api.recipes.latest)
   const { me } = useMe()
   const [next, ...rest] = events ?? []
+  const heroRef = useRef<HTMLElement>(null)
+
+  useEffect(() => {
+    const hero = heroRef.current!
+    const update = () => {
+      const rect = hero.getBoundingClientRect()
+      const p = Math.max(0, Math.min(1, -rect.top / (rect.height - window.innerHeight * 1.25)))
+      morph.value = p
+      hero.style.setProperty("--morph", String(p * p * (3 - 2 * p)))
+    }
+    update()
+    window.addEventListener("scroll", update, { passive: true })
+    window.addEventListener("resize", update)
+    return () => {
+      window.removeEventListener("scroll", update)
+      window.removeEventListener("resize", update)
+    }
+  }, [])
 
   return (
     <>
-      <section className="relative overflow-hidden border-b border-white/10 bg-black">
-        <div className="pointer-events-none absolute inset-0 md:left-1/3">
-          <ChromeCanvas create={createChromeCutlery} className="absolute inset-0 opacity-80" />
-          <div className="crt absolute inset-0 [mask-image:radial-gradient(ellipse_at_60%_50%,black_35%,transparent_75%)]" />
+      <section ref={heroRef} className="relative border-b border-white/10 bg-black">
+        <div className="pointer-events-none absolute inset-0">
+          <div className="sticky top-0 h-svh overflow-hidden">
+            <div className="absolute inset-0 md:left-1/3 md:translate-x-[calc(var(--morph,0)*-25%)]">
+              <ChromeCanvas create={createHeroCutlery} className="absolute inset-0 opacity-80" />
+              <div className="crt absolute inset-0 [mask-image:radial-gradient(ellipse_at_60%_50%,black_35%,transparent_75%)]" />
+            </div>
+          </div>
         </div>
-        <div className="relative mx-auto flex min-h-[calc(100svh-4rem)] max-w-6xl flex-col justify-end px-6 pt-24 pb-16">
+        <div className="relative mx-auto flex min-h-svh max-w-6xl flex-col justify-end px-6 pt-24 pb-16">
           <h1 className="font-display text-7xl leading-[0.9] tracking-[-0.03em] text-paper sm:text-8xl md:text-9xl">
             Scenes
             <br />
             <span className="italic">&</span> Supper
           </h1>
-          <p className="mt-6 max-w-md text-lg text-neutral-300">
+          <p className="mt-10 max-w-md text-lg text-neutral-300">
             We screen a film and cook the food on screen. Every course lands with its scene.
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
@@ -37,6 +64,7 @@ export default function Home() {
             </ButtonLink>
           </div>
         </div>
+        <div className="h-[175svh]" />
       </section>
 
       {next && (
