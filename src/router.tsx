@@ -1,25 +1,12 @@
+import type { ComponentType } from "react"
 import { createBrowserRouter } from "react-router"
 import App from "./app.tsx"
-import Account from "./routes/account.tsx"
-import AdminEventForm from "./routes/admin/event-form.tsx"
-import AdminEvents from "./routes/admin/events.tsx"
-import AdminGuests from "./routes/admin/guests.tsx"
-import AdminLayout from "./routes/admin/layout.tsx"
-import AdminRecipeForm from "./routes/admin/recipe-form.tsx"
-import AdminTitleForm from "./routes/admin/title-form.tsx"
-import AdminTitles from "./routes/admin/titles.tsx"
-import CheckoutSuccess from "./routes/checkout-success.tsx"
-import Chromatic from "./routes/chromatic.tsx"
 import ErrorPage from "./routes/error.tsx"
-import Event from "./routes/event.tsx"
-import Events from "./routes/events.tsx"
 import Home from "./routes/home.tsx"
-import Missing from "./routes/missing.tsx"
-import Recipe from "./routes/recipe.tsx"
-import SignInWithLink from "./routes/sign-in-with-link.tsx"
-import SignIn from "./routes/sign-in.tsx"
-import Title from "./routes/title.tsx"
-import Titles from "./routes/titles.tsx"
+
+const load = async (module: Promise<{ default: ComponentType }>) => ({
+  Component: (await module).default,
+})
 
 export const router = createBrowserRouter([
   {
@@ -28,32 +15,32 @@ export const router = createBrowserRouter([
     ErrorBoundary: ErrorPage,
     children: [
       { index: true, Component: Home },
-      { path: "events", Component: Events },
-      { path: "events/:slug", Component: Event },
-      { path: "titles", Component: Titles },
-      { path: "titles/:slug", Component: Title },
-      { path: "recipes/:slug", Component: Recipe },
-      { path: "sign-in", Component: SignIn },
-      { path: "sign-in-with-link", Component: SignInWithLink },
-      { path: "account", Component: Account },
-      { path: "checkout/success", Component: CheckoutSuccess },
-      { path: "chromatic", Component: Chromatic },
+      { path: "events", lazy: () => load(import("./routes/events.tsx")) },
+      { path: "events/:slug", lazy: () => load(import("./routes/event.tsx")) },
+      { path: "titles", lazy: () => load(import("./routes/titles.tsx")) },
+      { path: "titles/:slug", lazy: () => load(import("./routes/title.tsx")) },
+      { path: "recipes/:slug", lazy: () => load(import("./routes/recipe.tsx")) },
+      { path: "sign-in", lazy: () => load(import("./routes/sign-in.tsx")) },
+      { path: "sign-in-with-link", lazy: () => load(import("./routes/sign-in-with-link.tsx")) },
+      { path: "account", lazy: () => load(import("./routes/account.tsx")) },
+      { path: "checkout/success", lazy: () => load(import("./routes/checkout-success.tsx")) },
+      { path: "chromatic", lazy: () => load(import("./routes/chromatic.tsx")) },
       {
         path: "admin",
-        Component: AdminLayout,
+        lazy: () => load(import("./routes/admin/layout.tsx")),
         children: [
-          { index: true, Component: AdminEvents },
-          { path: "events/new", Component: AdminEventForm },
-          { path: "events/:id", Component: AdminEventForm },
-          { path: "events/:id/guests", Component: AdminGuests },
-          { path: "titles", Component: AdminTitles },
-          { path: "titles/new", Component: AdminTitleForm },
-          { path: "titles/:id", Component: AdminTitleForm },
-          { path: "recipes/new", Component: AdminRecipeForm },
-          { path: "recipes/:id", Component: AdminRecipeForm },
+          { index: true, lazy: () => load(import("./routes/admin/events.tsx")) },
+          { path: "events/new", lazy: () => load(import("./routes/admin/event-form.tsx")) },
+          { path: "events/:id", lazy: () => load(import("./routes/admin/event-form.tsx")) },
+          { path: "events/:id/guests", lazy: () => load(import("./routes/admin/guests.tsx")) },
+          { path: "titles", lazy: () => load(import("./routes/admin/titles.tsx")) },
+          { path: "titles/new", lazy: () => load(import("./routes/admin/title-form.tsx")) },
+          { path: "titles/:id", lazy: () => load(import("./routes/admin/title-form.tsx")) },
+          { path: "recipes/new", lazy: () => load(import("./routes/admin/recipe-form.tsx")) },
+          { path: "recipes/:id", lazy: () => load(import("./routes/admin/recipe-form.tsx")) },
         ],
       },
-      { path: "*", Component: Missing },
+      { path: "*", lazy: () => load(import("./routes/missing.tsx")) },
     ],
   },
 ])
