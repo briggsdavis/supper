@@ -7,7 +7,8 @@
   --site-gutter: max(7vw, 1.875rem);
   --site-ease: cubic-bezier(.22, .61, .36, 1);
   background-color: var(--site-background);
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='grain'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.88' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23grain)' opacity='.045'/%3E%3C/svg%3E");
+  background-attachment: fixed;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='grain'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.88' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23grain)' opacity='.085'/%3E%3C/svg%3E");
 }
 
 .supper-site :where(.supper-nav, .supper-intro, .supper-editorial, .supper-contact, .supper-footer) {

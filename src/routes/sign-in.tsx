@@ -1,6 +1,6 @@
 import { useSendEmailMagicLink } from "@convex-dev/auth/methods/email-magic-link/react"
 import { useConvexAuth } from "convex/react"
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { Navigate, useSearchParams } from "react-router"
 import { api } from "../../convex/_generated/api"
 import { Alert, Button, Field, Heading, Input, Loading, Page } from "../components/ui.tsx"
@@ -10,15 +10,16 @@ export default function SignIn() {
   const { isAuthenticated, isLoading } = useConvexAuth()
   const [params] = useSearchParams()
   const next = params.get("next")?.startsWith("/") ? params.get("next")! : "/account"
+  if (isLoading) return <Loading />
+  if (isAuthenticated) return <Navigate to={next} replace />
+  return <EmailSignIn next={next} />
+}
+
+export function EmailSignIn({ next, admin = false }: { next: string; admin?: boolean }) {
   const { sendMagicLink, pending } = useSendEmailMagicLink(api.auth)
   const [email, setEmail] = useState("")
   const [error, setError] = useState<string | null>(null)
   const [sentTo, setSentTo] = useState<string | null>(null)
-
-  useEffect(() => sessionStorage.setItem(NEXT_KEY, next), [next])
-
-  if (isLoading) return <Loading />
-  if (isAuthenticated) return <Navigate to={next} replace />
 
   return (
     <Page className="max-w-md py-24">
@@ -42,6 +43,7 @@ export default function SignIn() {
           onSubmit={async (e) => {
             e.preventDefault()
             setError(null)
+            sessionStorage.setItem(NEXT_KEY, next)
             const result = await sendMagicLink({ email })
             if (result.success) {
               setSentTo(email)
@@ -67,8 +69,12 @@ export default function SignIn() {
           }}
         >
           <div className="space-y-3">
-            <Heading>Take a seat</Heading>
-            <p className="text-neutral-400">We'll email you a link. No password needed.</p>
+            <Heading>{admin ? "Admin sign-in" : "Take a seat"}</Heading>
+            <p className="text-neutral-400">
+              {admin
+                ? "Sign in or create an account with an email link. Use an approved email to access the dashboard."
+                : "We'll email you a link. No password needed."}
+            </p>
           </div>
           <Field label="Email">
             <Input

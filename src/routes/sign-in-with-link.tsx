@@ -38,13 +38,16 @@ function WithCode({ emailCode }: { emailCode: string }) {
 }
 
 function Failed({ children }: { children: ReactNode }) {
+  const next = sessionStorage.getItem(NEXT_KEY)
+  const fromAdmin = next !== null && /^\/admin(?:[/?#]|$)/i.test(next)
+
   return (
     <Page className="max-w-md space-y-4 py-24">
       <Heading>Couldn't sign you in</Heading>
       <p role="alert" className="text-neutral-300">
         {children}
       </p>
-      <ButtonLink to="/sign-in">Get a new link</ButtonLink>
+      <ButtonLink to={fromAdmin ? "/admin" : "/sign-in"}>Get a new link</ButtonLink>
     </Page>
   )
 }

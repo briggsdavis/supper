@@ -44,7 +44,6 @@ export default function Home() {
           <div className="sticky top-0 h-svh overflow-hidden">
             <div className="absolute inset-0 md:left-1/3 md:translate-x-[calc(var(--morph,0)*-25%)]">
               <ChromeCanvas create={createHeroCutlery} className="absolute inset-0 scale-90 opacity-80" />
-              <div className="crt absolute inset-0 [mask-image:radial-gradient(ellipse_at_60%_50%,black_35%,transparent_75%)]" />
             </div>
           </div>
         </div>

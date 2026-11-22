@@ -182,7 +182,9 @@ void main() {
   col /= uGain;
   col = 1.0 - exp(-col * 1.15);
   col = mix(col, col * col * (3.0 - 2.0 * col), 0.35);
-  col += (hash(gl_FragCoord.xy + fract(uTime) * 61.0) - 0.5) * 0.025;
+  // Keep unlit pixels black so screen blending leaves the page background unchanged.
+  float lit = smoothstep(0.0, 0.12, max(col.r, max(col.g, col.b)));
+  col += (hash(gl_FragCoord.xy + fract(uTime) * 61.0) - 0.5) * 0.025 * lit;
   outColor = vec4(col, 1.0);
 }`
 
