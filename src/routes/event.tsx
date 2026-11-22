@@ -39,14 +39,14 @@ export default function Event() {
         <Poster url={event.title?.posterUrl} name={name} className="w-56 md:w-72" />
         <div>
           <h1 className="font-display text-6xl leading-none text-paper md:text-7xl">{name}</h1>
-          {event.title?.year && <p className="mt-2 text-neutral-500">{event.title.year}</p>}
-          <p className="mt-4 text-xl text-paper">
+          {event.title?.year && <p className="mt-2 font-mono text-neutral-500">{event.title.year}</p>}
+          <p className="mt-4 font-mono text-base text-paper">
             {longDate(event.startsAt)} · {time(event.startsAt)}
           </p>
           <p className="mt-6 max-w-2xl text-lg text-neutral-300">{event.title?.synopsis}</p>
           {event.note && <p className="mt-4 max-w-2xl text-neutral-400">{event.note}</p>}
 
-          <dl className="mt-8 grid max-w-xl grid-cols-2 gap-6 text-sm">
+          <dl className="mt-8 grid max-w-xl grid-cols-2 gap-6 font-mono text-sm">
             <div>
               <dt className="text-neutral-500">Where</dt>
               <dd className="mt-1 text-paper">{event.venue}</dd>
@@ -78,7 +78,7 @@ export default function Event() {
             {event.menu.map((c, i) => (
               <li key={i} className="rounded-2xl border border-white/10 p-6">
                 <p className="font-display text-2xl text-paper">{c.dish}</p>
-                <p className="mt-1 text-sm text-neutral-500">{c.course}</p>
+                <p className="mt-1 font-mono text-sm text-neutral-500">{c.course}</p>
               </li>
             ))}
           </ol>

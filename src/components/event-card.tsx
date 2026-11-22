@@ -18,12 +18,12 @@ export default function EventCard({ event }: { event: UpcomingEvent }) {
       <div className="flex min-w-0 flex-1 flex-col justify-between py-1">
         <div>
           <h3 className="font-display text-2xl text-paper">{name}</h3>
-          <p className="mt-1 text-sm text-neutral-300">
+          <p className="mt-1 font-mono text-sm text-neutral-300">
             {weekday(event.startsAt)} {shortDate(event.startsAt)} · {time(event.startsAt)}
           </p>
-          <p className="truncate text-sm text-neutral-500">{event.venue}</p>
+          <p className="truncate font-mono text-sm text-neutral-500">{event.venue}</p>
         </div>
-        <p className="text-sm">
+        <p className="font-mono text-sm">
           <span className="text-paper">{money(event.priceCents)}</span>
           <span className="text-neutral-500">
             {" "}

@@ -9,12 +9,15 @@ export default function AdminLayout() {
   return (
     <RequireAdmin>
       <Page>
-        <div className="mb-10 flex items-center gap-2 border-b border-white/10 pb-4">
+        <div className="mb-10 flex flex-wrap items-center gap-2 border-b border-white/10 pb-4">
           <NavLink to="/admin" end className={tab}>
             Dinners
           </NavLink>
           <NavLink to="/admin/titles" className={tab}>
             Titles & recipes
+          </NavLink>
+          <NavLink to="/admin/homepage" className={tab}>
+            Homepage
           </NavLink>
         </div>
         <Outlet />

@@ -6,6 +6,11 @@ export const vCourse = v.object({ course: v.string(), dish: v.string() })
 export const vOrderStatus = v.union(v.literal("pending"), v.literal("paid"), v.literal("expired"))
 
 export default defineSchema({
+  siteSettings: defineTable({
+    key: v.literal("homepage"),
+    showHomepageContent: v.boolean(),
+  }).index("by_key", ["key"]),
+
   users: defineTable({
     name: v.optional(v.string()),
     alerts: v.optional(v.boolean()),

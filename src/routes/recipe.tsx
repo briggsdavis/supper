@@ -17,7 +17,7 @@ export default function Recipe() {
       {recipe.title && (
         <Link
           to={`/titles/${recipe.title.slug}`}
-          className="mt-3 inline-block text-neutral-400 hover:text-paper"
+          className="mt-3 inline-block font-mono text-sm text-neutral-400 hover:text-paper"
         >
           From {recipe.title.name}
         </Link>
@@ -63,7 +63,7 @@ export default function Recipe() {
           <ol className="mt-4 space-y-5">
             {recipe.steps.map((s, n) => (
               <li key={n} className="flex gap-4">
-                <span className="font-display text-2xl text-neutral-500">{n + 1}</span>
+                <span className="font-mono text-2xl text-neutral-500">{n + 1}</span>
                 <p className="pt-1 text-neutral-200">{s}</p>
               </li>
             ))}
@@ -72,7 +72,7 @@ export default function Recipe() {
       </div>
 
       {recipe.sourceUrl && (
-        <p className="mt-12 text-sm text-neutral-500">
+        <p className="mt-12 font-mono text-sm text-neutral-500">
           Source:{" "}
           <a
             href={recipe.sourceUrl}

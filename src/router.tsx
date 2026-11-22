@@ -15,6 +15,7 @@ export const router = createBrowserRouter([
     ErrorBoundary: ErrorPage,
     children: [
       { index: true, Component: Home },
+      { path: "contact", lazy: () => load(import("./routes/contact.tsx")) },
       { path: "events", lazy: () => load(import("./routes/events.tsx")) },
       { path: "events/:slug", lazy: () => load(import("./routes/event.tsx")) },
       { path: "titles", lazy: () => load(import("./routes/titles.tsx")) },
@@ -30,6 +31,7 @@ export const router = createBrowserRouter([
         lazy: () => load(import("./routes/admin/layout.tsx")),
         children: [
           { index: true, lazy: () => load(import("./routes/admin/events.tsx")) },
+          { path: "homepage", lazy: () => load(import("./routes/admin/homepage.tsx")) },
           { path: "events/new", lazy: () => load(import("./routes/admin/event-form.tsx")) },
           { path: "events/:id", lazy: () => load(import("./routes/admin/event-form.tsx")) },
           { path: "events/:id/guests", lazy: () => load(import("./routes/admin/guests.tsx")) },

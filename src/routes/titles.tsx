@@ -41,7 +41,7 @@ export default function Titles() {
                   className="transition group-hover:-translate-y-1"
                 />
                 <p className="mt-3 font-display text-lg text-paper">{t.name}</p>
-                <p className="text-xs text-neutral-500">
+                <p className="font-mono text-xs text-neutral-500">
                   {t.kind === "show" ? "Show" : "Movie"}
                   {t.year ? ` · ${t.year}` : ""}
                 </p>

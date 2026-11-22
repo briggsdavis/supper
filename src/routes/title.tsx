@@ -20,7 +20,7 @@ export default function Title() {
           <h1 className="font-display text-6xl leading-none text-paper md:text-7xl">
             {title.name}
           </h1>
-          <p className="mt-2 text-neutral-500">
+          <p className="mt-2 font-mono text-neutral-500">
             {title.kind === "show" ? "Show" : "Movie"}
             {title.year ? ` · ${title.year}` : ""}
           </p>
@@ -31,7 +31,7 @@ export default function Title() {
               to={`/events/${e.slug}`}
               className="mt-6 flex max-w-md items-center justify-between rounded-2xl border border-white/15 px-5 py-4 hover:border-white/40"
             >
-              <span className="text-paper">
+              <span className="font-mono text-sm text-paper">
                 Dinner on {longDate(e.startsAt)} · {time(e.startsAt)}
               </span>
               <span className="text-sm text-paper">Tickets</span>

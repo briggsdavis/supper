@@ -5,6 +5,7 @@ import { api } from "../../convex/_generated/api"
 import { useMe } from "../components/auth.tsx"
 import ChromeCanvas from "../components/chrome-canvas.tsx"
 import EventCard from "../components/event-card.tsx"
+import HomeSections, { HomeIntro } from "../components/home-sections.tsx"
 import { ButtonLink, Page, Poster } from "../components/ui.tsx"
 import { createChromeCutlery } from "../effects/chrome-cutlery.ts"
 import { longDate, money, time, TODAY } from "../lib.ts"
@@ -14,17 +15,16 @@ const createHeroCutlery = (canvas: HTMLCanvasElement) =>
   createChromeCutlery(canvas, "flame", false, () => morph.value, 0.14, true)
 
 export default function Home() {
-  const events = useQuery(api.events.upcoming, { after: TODAY })
-  const recipes = useQuery(api.recipes.latest)
-  const { me } = useMe()
-  const [next, ...rest] = events ?? []
+  const showContent = useQuery(api.siteSettings.homepageContent) === true
   const heroRef = useRef<HTMLElement>(null)
 
   useEffect(() => {
-    const hero = heroRef.current!
+    const hero = heroRef.current
+    if (!hero) return
     const update = () => {
       const rect = hero.getBoundingClientRect()
-      const p = Math.max(0, Math.min(1, -rect.top / (rect.height - window.innerHeight * 1.25)))
+      const travel = Math.max(1, rect.height - window.innerHeight)
+      const p = showContent ? Math.max(0, Math.min(1, -rect.top / travel)) : 0
       morph.value = p
       hero.style.setProperty("--morph", String(p * p * (3 - 2 * p)))
     }
@@ -35,24 +35,24 @@ export default function Home() {
       window.removeEventListener("scroll", update)
       window.removeEventListener("resize", update)
     }
-  }, [])
+  }, [showContent])
 
   return (
     <>
-      <section ref={heroRef} className="relative border-b border-white/10 bg-black">
-        <div className="pointer-events-none absolute inset-0">
+      <section ref={heroRef} className="relative" aria-labelledby="hero-title">
+        <div className="supper-hero-art pointer-events-none absolute inset-0" aria-hidden="true">
           <div className="sticky top-0 h-svh overflow-hidden">
             <div className="absolute inset-0 md:left-1/3 md:translate-x-[calc(var(--morph,0)*-25%)]">
-              <ChromeCanvas create={createHeroCutlery} className="absolute inset-0 opacity-80" />
+              <ChromeCanvas create={createHeroCutlery} className="absolute inset-0 scale-90 opacity-80" />
               <div className="crt absolute inset-0 [mask-image:radial-gradient(ellipse_at_60%_50%,black_35%,transparent_75%)]" />
             </div>
           </div>
         </div>
-        <div className="relative mx-auto flex min-h-svh max-w-6xl flex-col justify-end px-6 pt-24 pb-16">
-          <h1 className="font-display text-7xl leading-[0.9] tracking-[-0.03em] text-paper sm:text-8xl md:text-9xl">
+        <div className="relative z-10 mx-auto flex min-h-svh max-w-6xl flex-col justify-end px-6 pt-24 pb-16">
+          <h1 id="hero-title" className="font-display text-7xl leading-[0.9] font-medium tracking-[-0.075em] text-paper sm:text-8xl md:text-9xl">
             Scenes
             <br />
-            <span className="italic">&</span> Supper
+            <em>&amp;</em> Supper
           </h1>
           <p className="mt-10 max-w-md text-lg text-neutral-300">
             We screen a film and cook the food on screen. Every course lands with its scene.
@@ -64,9 +64,27 @@ export default function Home() {
             </ButtonLink>
           </div>
         </div>
-        <div className="h-[175svh]" />
+        {showContent && <HomeIntro />}
       </section>
 
+      {showContent && (
+        <>
+          <HomeSections />
+          <HomeListings />
+        </>
+      )}
+    </>
+  )
+}
+
+function HomeListings() {
+  const events = useQuery(api.events.upcoming, { after: TODAY })
+  const recipes = useQuery(api.recipes.latest)
+  const { me } = useMe()
+  const [next, ...rest] = events ?? []
+
+  return (
+    <>
       {next && (
         <Page>
           <h2 className="font-display text-3xl text-paper">Next dinner</h2>
@@ -81,7 +99,7 @@ export default function Home() {
             />
             <div className="flex flex-col justify-center">
               <h3 className="font-display text-5xl text-paper md:text-7xl">{next.title?.name}</h3>
-              <p className="mt-3 text-xl text-paper">
+              <p className="mt-3 font-mono text-base text-paper">
                 {longDate(next.startsAt)} · {time(next.startsAt)}
               </p>
               <p className="mt-4 max-w-xl text-neutral-400">{next.title?.synopsis}</p>
@@ -92,7 +110,7 @@ export default function Home() {
                   </li>
                 ))}
               </ul>
-              <p className="mt-6 text-paper">
+              <p className="mt-6 font-mono text-sm text-paper">
                 {money(next.priceCents)} · {Math.max(0, next.capacity - next.sold)} seats left
               </p>
             </div>
@@ -112,7 +130,7 @@ export default function Home() {
       )}
 
       {recipes && recipes.length > 0 && (
-        <Page className="border-t border-white/10">
+        <Page>
           <div className="flex items-end justify-between gap-4">
             <h2 className="font-display text-4xl text-paper">Cook the scene at home</h2>
             <Link to="/titles" className="text-sm text-neutral-400 hover:text-paper">
@@ -136,7 +154,7 @@ export default function Home() {
       )}
 
       {!me && (
-        <Page className="border-t border-white/10 text-center">
+        <Page className="text-center">
           <h2 className="font-display text-4xl text-paper">Save a seat for the next one</h2>
           <p className="mx-auto mt-3 max-w-md text-neutral-400">
             Make an account and we'll email you when new dinners open.
