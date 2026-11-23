@@ -3,7 +3,10 @@ import { mutation, query, type QueryCtx } from "./_generated/server"
 import { requireAdmin } from "./lib"
 
 const readHomepage = (ctx: Pick<QueryCtx, "db">) =>
-  ctx.db.query("siteSettings").withIndex("by_key", (q) => q.eq("key", "homepage")).unique()
+  ctx.db
+    .query("siteSettings")
+    .withIndex("by_key", (q) => q.eq("key", "homepage"))
+    .unique()
 
 export const homepageContent = query({
   args: {},

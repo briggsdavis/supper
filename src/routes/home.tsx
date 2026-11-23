@@ -43,12 +43,18 @@ export default function Home() {
         <div className="supper-hero-art pointer-events-none absolute inset-0" aria-hidden="true">
           <div className="sticky top-0 h-svh overflow-hidden">
             <div className="absolute inset-0 md:left-1/3 md:translate-x-[calc(var(--morph,0)*-25%)]">
-              <ChromeCanvas create={createHeroCutlery} className="absolute inset-0 scale-90 opacity-80" />
+              <ChromeCanvas
+                create={createHeroCutlery}
+                className="absolute inset-0 scale-90 opacity-80"
+              />
             </div>
           </div>
         </div>
         <div className="relative z-10 mx-auto flex min-h-svh max-w-6xl flex-col justify-end px-6 pt-24 pb-16">
-          <h1 id="hero-title" className="font-display text-7xl leading-[0.9] font-medium tracking-[-0.075em] text-paper sm:text-8xl md:text-9xl">
+          <h1
+            id="hero-title"
+            className="font-display text-7xl leading-[0.9] font-medium tracking-[-0.075em] text-paper sm:text-8xl md:text-9xl"
+          >
             Scenes
             <br />
             <em>&amp;</em> Supper

@@ -28,7 +28,13 @@ export function RequireAuth({ children }: { children: ReactNode }) {
   return children
 }
 
-export function RequireAdmin({ children, signedOut }: { children: ReactNode; signedOut: ReactNode }) {
+export function RequireAdmin({
+  children,
+  signedOut,
+}: {
+  children: ReactNode
+  signedOut: ReactNode
+}) {
   const { isAuthenticated, me, loading } = useMe()
   if (loading) return <Loading />
   if (!isAuthenticated) return signedOut

@@ -76,18 +76,25 @@ function FilmGallery() {
         >
           <Link
             to={`/titles/${film.titleSlug}`}
-            onPointerEnter={event => { if (event.pointerType !== "touch") activate(index) }}
+            onPointerEnter={(event) => {
+              if (event.pointerType !== "touch") activate(index)
+            }}
             onFocus={() => activate(index)}
             onBlur={deactivate}
           >
             <div className={`supper-poster supper-art-${film.color}`}>
               <div className="supper-poster-art" aria-hidden="true">
-                <i /><b /><em>{film.poster}</em>
+                <i />
+                <b />
+                <em>{film.poster}</em>
               </div>
               <span className="supper-poster-tag">{film.tag}</span>
               <span className="supper-poster-year">{film.year}</span>
             </div>
-            <div className="supper-film-title"><h3>{film.film}</h3><Arrow /></div>
+            <div className="supper-film-title">
+              <h3>{film.film}</h3>
+              <Arrow />
+            </div>
             <span className="supper-film-caption">A MENU IN THREE ACTS</span>
           </Link>
         </Reveal>
@@ -99,7 +106,12 @@ function FilmGallery() {
 export function HomeIntro() {
   return (
     <section className="supper-section supper-intro" aria-labelledby="intro-title">
-      <Reveal><h2 id="intro-title">Let the movie<br /> set the <em>table.</em></h2></Reveal>
+      <Reveal>
+        <h2 id="intro-title">
+          Let the movie
+          <br /> set the <em>table.</em>
+        </h2>
+      </Reveal>
       <Reveal className="supper-intro-copy">
         <p>Some films make you hungry.</p>
         <p>We pair a film with a menu from its world, timed to the scenes and made for sharing.</p>
@@ -114,22 +126,38 @@ export function HomeIntro() {
 export default function HomeSections() {
   return (
     <div className="supper-editorial">
-      <section className="supper-section supper-menu" id="menu" tabIndex={-1} aria-labelledby="menu-title">
+      <section
+        className="supper-section supper-menu"
+        id="menu"
+        tabIndex={-1}
+        aria-labelledby="menu-title"
+      >
         <Reveal className="supper-section-heading">
-          <h2 id="menu-title">Scenes you can <em>taste.</em></h2>
-          <p>Three little reasons to<br /> stay through the credits.</p>
+          <h2 id="menu-title">
+            Scenes you can <em>taste.</em>
+          </h2>
+          <p>
+            Three little reasons to
+            <br /> stay through the credits.
+          </p>
         </Reveal>
         <div className="supper-meal-list">
           {features.map((meal, index) => (
             <Link key={meal.recipeSlug} className="supper-meal" to={`/recipes/${meal.recipeSlug}`}>
-              <span className="supper-meal-number" aria-hidden="true">0{index + 1} <span>/ 03</span></span>
+              <span className="supper-meal-number" aria-hidden="true">
+                0{index + 1} <span>/ 03</span>
+              </span>
               <div className={`supper-meal-art supper-art-${meal.color}`} aria-hidden="true">
-                <i /><b /><span>{meal.course}</span>
+                <i />
+                <b />
+                <span>{meal.course}</span>
               </div>
               <Reveal className="supper-meal-copy">
                 <h3>{meal.title}</h3>
                 <p>{meal.detail}</p>
-                <span>{meal.film} · {meal.year}</span>
+                <span>
+                  {meal.film} · {meal.year}
+                </span>
               </Reveal>
               <Arrow />
             </Link>
@@ -145,12 +173,19 @@ export default function HomeSections() {
 
       <section className="supper-section supper-films">
         <Reveal className="supper-section-heading">
-          <h2>Now showing <em>at home.</em></h2>
-          <p>A few films we think<br /> deserve a second course.</p>
+          <h2>
+            Now showing <em>at home.</em>
+          </h2>
+          <p>
+            A few films we think
+            <br /> deserve a second course.
+          </p>
         </Reveal>
         <FilmGallery />
         <div className="supper-film-cta">
-          <Link to="/titles" className="supper-button">Discover more films <Arrow /></Link>
+          <Link to="/titles" className="supper-button">
+            Discover more films <Arrow />
+          </Link>
         </div>
       </section>
     </div>

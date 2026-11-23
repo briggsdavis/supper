@@ -6,14 +6,21 @@ export function Reveal({ children, className = "" }: { children: ReactNode; clas
 
   useEffect(() => {
     const element = ref.current
-    if (!element || !("IntersectionObserver" in window) ||
-        window.matchMedia("(prefers-reduced-motion: reduce)").matches) return
+    if (
+      !element ||
+      !("IntersectionObserver" in window) ||
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    )
+      return
 
-    const observer = new IntersectionObserver(([entry]) => {
-      if (!entry.isIntersecting) return
-      element.classList.remove("supper-reveal-pending")
-      observer.disconnect()
-    }, { threshold: 0.12 })
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting) return
+        element.classList.remove("supper-reveal-pending")
+        observer.disconnect()
+      },
+      { threshold: 0.12 },
+    )
     element.classList.add("supper-reveal-pending")
     observer.observe(element)
     return () => {
@@ -22,7 +29,11 @@ export function Reveal({ children, className = "" }: { children: ReactNode; clas
     }
   }, [])
 
-  return <div ref={ref} className={`supper-reveal ${className}`}>{children}</div>
+  return (
+    <div ref={ref} className={`supper-reveal ${className}`}>
+      {children}
+    </div>
+  )
 }
 
 export function Disc({ followPointer = false }: { followPointer?: boolean }) {
@@ -47,7 +58,7 @@ export function Disc({ followPointer = false }: { followPointer?: boolean }) {
     const updateScroll = () => {
       cancelAnimationFrame(frame)
       frame = requestAnimationFrame(() => {
-        disc.style.setProperty("--disc-spin", `${window.scrollY * 0.12 % 360}deg`)
+        disc.style.setProperty("--disc-spin", `${(window.scrollY * 0.12) % 360}deg`)
       })
     }
     if (followPointer) window.addEventListener("pointermove", trackPointer, { passive: true })
@@ -62,18 +73,28 @@ export function Disc({ followPointer = false }: { followPointer?: boolean }) {
     }
   }, [followPointer])
 
-  return <div ref={ref} className="supper-disc" aria-hidden="true"><span /></div>
+  return (
+    <div ref={ref} className="supper-disc" aria-hidden="true">
+      <span />
+    </div>
+  )
 }
 
 export function Arrow() {
-  return <span className="supper-arrow" aria-hidden="true">↗</span>
+  return (
+    <span className="supper-arrow" aria-hidden="true">
+      ↗
+    </span>
+  )
 }
 
 export function Brand() {
   return (
     <Link className="supper-brand" to="/" viewTransition>
       <span className="supper-brand-disc" aria-hidden="true" />
-      <span>Scenes &amp; Supper<span className="supper-brand-period">.</span></span>
+      <span>
+        Scenes &amp; Supper<span className="supper-brand-period">.</span>
+      </span>
     </Link>
   )
 }
@@ -83,7 +104,10 @@ export function SiteFooter() {
     <footer className="supper-footer supper-section">
       <Disc followPointer />
       <Reveal className="supper-footer-main">
-        <h2>Make tonight<br /> a <em>little</em> more cinematic.</h2>
+        <h2>
+          Make tonight
+          <br /> a <em>little</em> more cinematic.
+        </h2>
         <Link to="/contact" className="supper-button" viewTransition>
           Let’s plan a night <Arrow />
         </Link>

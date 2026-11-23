@@ -5,7 +5,9 @@ function openEmailDraft(event: FormEvent<HTMLFormElement>) {
   event.preventDefault()
   const fields = new FormData(event.currentTarget)
   const subject = encodeURIComponent("A note for Scenes & Supper")
-  const body = encodeURIComponent(`${fields.get("message")}\n\n${fields.get("name")}\n${fields.get("email")}`)
+  const body = encodeURIComponent(
+    `${fields.get("message")}\n\n${fields.get("name")}\n${fields.get("email")}`,
+  )
   window.location.href = `mailto:hello@scenesandsupper.com?subject=${subject}&body=${body}`
 }
 
@@ -19,11 +21,22 @@ export default function Contact() {
         <form onSubmit={openEmailDraft}>
           <label>
             Your name
-            <input name="name" autoComplete="name" placeholder="The name on the reservation" required />
+            <input
+              name="name"
+              autoComplete="name"
+              placeholder="The name on the reservation"
+              required
+            />
           </label>
           <label>
             Email address
-            <input name="email" type="email" autoComplete="email" placeholder="you@somewhere.com" required />
+            <input
+              name="email"
+              type="email"
+              autoComplete="email"
+              placeholder="you@somewhere.com"
+              required
+            />
           </label>
           <label>
             What’s on your mind?

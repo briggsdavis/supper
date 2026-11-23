@@ -39,7 +39,9 @@ export default function Event() {
         <Poster url={event.title?.posterUrl} name={name} className="w-56 md:w-72" />
         <div>
           <h1 className="font-display text-6xl leading-none text-paper md:text-7xl">{name}</h1>
-          {event.title?.year && <p className="mt-2 font-mono text-neutral-500">{event.title.year}</p>}
+          {event.title?.year && (
+            <p className="mt-2 font-mono text-neutral-500">{event.title.year}</p>
+          )}
           <p className="mt-4 font-mono text-base text-paper">
             {longDate(event.startsAt)} · {time(event.startsAt)}
           </p>

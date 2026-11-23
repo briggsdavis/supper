@@ -15,7 +15,9 @@ export default function App() {
       <header className="supper-nav">
         <Brand />
         <nav className="supper-nav-group" aria-label="Main navigation">
-          <NavLink to="/" end viewTransition>Home</NavLink>
+          <NavLink to="/" end viewTransition>
+            Home
+          </NavLink>
           <NavLink to="/events">Dinners</NavLink>
           <NavLink to="/titles">Recipes</NavLink>
         </nav>

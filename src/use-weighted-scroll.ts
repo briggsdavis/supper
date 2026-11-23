@@ -35,21 +35,38 @@ export function useWeightedScroll() {
       const mode = event.deltaMode
       const { deltaX, deltaY, target } = event
       // Keep precise trackpad gestures and scrolling inside controls native.
-      if (event.defaultPrevented || !event.cancelable || motion.matches || event.ctrlKey ||
-          event.metaKey || event.shiftKey || event.altKey || deltaX !== 0 || deltaY === 0 ||
-          (mode === 0 && (Math.abs(deltaY) < 40 || !Number.isInteger(deltaY)))) {
+      if (
+        event.defaultPrevented ||
+        !event.cancelable ||
+        motion.matches ||
+        event.ctrlKey ||
+        event.metaKey ||
+        event.shiftKey ||
+        event.altKey ||
+        deltaX !== 0 ||
+        deltaY === 0 ||
+        (mode === 0 && (Math.abs(deltaY) < 40 || !Number.isInteger(deltaY)))
+      ) {
         stop()
         return
       }
 
-      if (target instanceof Element && target.closest("input, select, textarea, [contenteditable]")) {
+      if (
+        target instanceof Element &&
+        target.closest("input, select, textarea, [contenteditable]")
+      ) {
         stop()
         return
       }
-      for (let element = target instanceof Element ? target : null;
-           element && element !== document.body; element = element.parentElement) {
-        if (element.scrollHeight > element.clientHeight &&
-            /^(auto|scroll)$/.test(getComputedStyle(element).overflowY)) {
+      for (
+        let element = target instanceof Element ? target : null;
+        element && element !== document.body;
+        element = element.parentElement
+      ) {
+        if (
+          element.scrollHeight > element.clientHeight &&
+          /^(auto|scroll)$/.test(getComputedStyle(element).overflowY)
+        ) {
           stop()
           return
         }
