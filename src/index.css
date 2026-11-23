@@ -189,24 +189,32 @@
   animation: supper-route-in 0.26s ease reverse both;
 }
 
-:root:has([data-movie-transition]) .supper-header {
+:root:has([data-detail-transition]) .supper-header {
   view-transition-name: supper-navbar;
 }
 
-:root:has([data-movie-transition])::view-transition-old(root) {
-  animation: supper-movie-fade 240ms ease reverse both;
+:root:has([data-detail-transition])::view-transition-old(root) {
+  animation: supper-route-in 240ms ease reverse both;
   mix-blend-mode: normal;
 }
 
-:root:has([data-movie-transition])::view-transition-new(root) {
-  animation: supper-movie-fade 400ms ease 240ms both;
+:root:has([data-detail-transition])::view-transition-new(root) {
+  animation: supper-route-in 400ms ease 240ms both;
   mix-blend-mode: normal;
 }
 
-::view-transition-group(supper-movie-poster) {
+::view-transition-group(*.supper-detail-image) {
   animation-duration: 640ms;
   animation-timing-function: var(--ease-site);
   z-index: 1;
+}
+
+::view-transition-old(*.supper-detail-image):only-child {
+  animation: supper-route-in 240ms ease reverse both;
+}
+
+::view-transition-new(*.supper-detail-image):only-child {
+  animation: supper-route-in 400ms ease 240ms both;
 }
 
 ::view-transition-group(supper-navbar) {
@@ -220,15 +228,6 @@
 
 ::view-transition-new(supper-navbar) {
   animation: none;
-}
-
-@keyframes supper-movie-fade {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
 }
 
 @media (max-width: 900px) {
@@ -259,11 +258,12 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  :root:has([data-movie-transition])::view-transition-old(root),
-  :root:has([data-movie-transition])::view-transition-new(root),
-  ::view-transition-group(supper-movie-poster),
-  ::view-transition-old(supper-movie-poster),
-  ::view-transition-new(supper-movie-poster),
+  :root:has([data-detail-transition])::view-transition-old(root),
+  :root:has([data-detail-transition])::view-transition-new(root),
+  ::view-transition-group(*.supper-detail-image),
+  ::view-transition-old(*.supper-detail-image),
+  ::view-transition-new(*.supper-detail-image),
+  ::view-transition-new(*.supper-detail-image):only-child,
   .supper-site :is(.supper-reveal, .supper-disc, .supper-meal, .supper-meal-art),
   ::view-transition-old(root),
   ::view-transition-new(root) {
@@ -271,7 +271,7 @@
     transition: none;
   }
 
-  ::view-transition-old(supper-movie-poster) {
+  ::view-transition-old(*.supper-detail-image) {
     display: none;
   }
 

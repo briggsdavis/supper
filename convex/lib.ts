@@ -1,10 +1,17 @@
 import { getAuthUserId } from "@convex-dev/auth/server"
 import { ConvexError } from "convex/values"
 import { components } from "./_generated/api"
-import type { Id } from "./_generated/dataModel"
+import type { Doc, Id } from "./_generated/dataModel"
 import { env, type QueryCtx } from "./_generated/server"
 
 type AuthCtx = Pick<QueryCtx, "auth" | "runQuery">
+
+export async function withRecipeImage(ctx: QueryCtx, recipe: Doc<"recipes">) {
+  return {
+    ...recipe,
+    imageUrl: recipe.imageId ? await ctx.storage.getUrl(recipe.imageId) : null,
+  }
+}
 
 const admins = () =>
   (env.ADMIN_EMAILS ?? "")

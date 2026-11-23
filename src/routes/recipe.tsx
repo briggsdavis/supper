@@ -1,31 +1,74 @@
 import { useQuery } from "convex/react"
+import type { FunctionReturnType } from "convex/server"
 import { Link, useParams } from "react-router"
 import { api } from "../../convex/_generated/api"
+import { detailColumns, useDetailImage } from "../components/detail-link.tsx"
 import { Loading, NotFound, Page } from "../components/ui.tsx"
 import { host, youtubeId } from "../lib.ts"
 
 export default function Recipe() {
   const { slug = "" } = useParams()
+  const { preview, imageStyle, headingRef } = useDetailImage("recipes", slug)
   const recipe = useQuery(api.recipes.get, { slug })
-  if (recipe === undefined) return <Loading />
   if (recipe === null) return <NotFound what="recipe" />
+  if (!recipe && !preview) return <Loading />
+  const yt = youtubeId(recipe?.videoUrl)
+  const imageUrl =
+    recipe?.imageUrl ??
+    preview?.imageUrl ??
+    (yt ? `https://i.ytimg.com/vi/${yt}/hqdefault.jpg` : null)
+
+  return (
+    <Page wide>
+      <div
+        className={imageUrl ? detailColumns : undefined}
+        data-detail-transition={imageStyle ? true : undefined}
+      >
+        {imageUrl && (
+          <img
+            src={imageUrl}
+            alt=""
+            style={imageStyle}
+            className="aspect-video w-full rounded-media bg-neutral-900 object-cover"
+          />
+        )}
+        <div className="min-w-0">
+          <h1
+            ref={headingRef}
+            tabIndex={-1}
+            className="font-display text-5xl leading-none tracking-tight text-paper focus:outline-none md:text-7xl"
+          >
+            {recipe?.name ?? preview?.name}
+          </h1>
+          {recipe?.title && (
+            <Link
+              to={`/titles/${recipe.title.slug}`}
+              className="mt-3 inline-block font-mono text-sm text-neutral-400 hover:text-paper"
+            >
+              From {recipe.title.name}
+            </Link>
+          )}
+          <p className="mt-5 max-w-2xl text-lg text-neutral-300">
+            {recipe?.summary ?? preview?.description}
+          </p>
+        </div>
+      </div>
+      {recipe && <RecipeInstructions recipe={recipe} />}
+    </Page>
+  )
+}
+
+function RecipeInstructions({
+  recipe,
+}: {
+  recipe: NonNullable<FunctionReturnType<typeof api.recipes.get>>
+}) {
   const yt = youtubeId(recipe.videoUrl)
 
   return (
-    <Page className="max-w-4xl">
-      <h1 className="font-display text-6xl leading-none text-paper">{recipe.name}</h1>
-      {recipe.title && (
-        <Link
-          to={`/titles/${recipe.title.slug}`}
-          className="mt-3 inline-block font-mono text-sm text-neutral-400 hover:text-paper"
-        >
-          From {recipe.title.name}
-        </Link>
-      )}
-      <p className="mt-4 text-lg text-neutral-300">{recipe.summary}</p>
-
+    <>
       {yt ? (
-        <div className="mt-8 aspect-video overflow-hidden rounded-media border border-white/10">
+        <div className="mt-12 aspect-video max-w-4xl overflow-hidden rounded-media border border-white/10">
           <iframe
             src={`https://www.youtube-nocookie.com/embed/${yt}`}
             title={recipe.name}
@@ -84,6 +127,6 @@ export default function Recipe() {
           </a>
         </p>
       )}
-    </Page>
+    </>
   )
 }

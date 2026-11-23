@@ -1,6 +1,6 @@
 import { ConvexError, v } from "convex/values"
 import { mutation, query } from "./_generated/server"
-import { requireAdmin, uniqueSlug } from "./lib"
+import { requireAdmin, uniqueSlug, withRecipeImage } from "./lib"
 import { withPoster } from "./titles"
 
 export const get = query({
@@ -12,7 +12,10 @@ export const get = query({
       .unique()
     if (recipe === null) return null
     const title = await ctx.db.get("titles", recipe.titleId)
-    return { ...recipe, title: title && (await withPoster(ctx, title)) }
+    return {
+      ...(await withRecipeImage(ctx, recipe)),
+      title: title && (await withPoster(ctx, title)),
+    }
   },
 })
 
@@ -33,8 +36,7 @@ export const featured = query({
     const withImages = recipes.filter((r) => r.imageId).slice(0, 6)
     return await Promise.all(
       withImages.map(async (r) => ({
-        ...r,
-        imageUrl: r.imageId ? await ctx.storage.getUrl(r.imageId) : null,
+        ...(await withRecipeImage(ctx, r)),
         title: await ctx.db.get("titles", r.titleId),
       })),
     )

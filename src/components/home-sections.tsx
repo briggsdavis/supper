@@ -2,16 +2,16 @@ import { useQuery } from "convex/react"
 import { useEffect, useRef, useState, type MouseEvent } from "react"
 import { Link } from "react-router"
 import { api } from "../../convex/_generated/api"
+import { DetailLink } from "./detail-link.tsx"
 import { mono, outlineButton, Reveal, section, sectionTitle } from "./marketing.tsx"
-import { MovieLink } from "./movie-link.tsx"
 
-function scrollToMenu(event: MouseEvent<HTMLAnchorElement>) {
+function scrollToPlaying(event: MouseEvent<HTMLAnchorElement>) {
   if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return
-  const menu = document.getElementById("menu")
-  if (!menu) return
+  const playing = document.getElementById("now-playing")
+  if (!playing) return
   event.preventDefault()
-  menu.focus({ preventScroll: true })
-  menu.scrollIntoView({
+  playing.focus({ preventScroll: true })
+  playing.scrollIntoView({
     behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth",
   })
 }
@@ -39,8 +39,10 @@ function FilmGallery() {
           key={film._id}
           className={`supper-film-card min-w-0 flex-1 max-sm:basis-auto ${active === null ? "" : active === index ? "grow-[1.15]" : "grow-[0.925]"}`}
         >
-          <MovieLink
-            movie={film}
+          <DetailLink
+            section="titles"
+            slug={film.slug}
+            preview={{ name: film.name, imageUrl: film.posterUrl, description: film.synopsis }}
             onPointerEnter={(event) => {
               if (event.pointerType !== "touch") activate(index)
             }}
@@ -75,7 +77,7 @@ function FilmGallery() {
                 )}
               </>
             )}
-          </MovieLink>
+          </DetailLink>
         </Reveal>
       ))}
     </div>
@@ -102,8 +104,8 @@ export function HomeIntro() {
           We pair a film with a menu from its world, timed to the scenes and made for sharing.
         </p>
         <a
-          href="#menu"
-          onClick={scrollToMenu}
+          href="#now-playing"
+          onClick={scrollToPlaying}
           className="mt-6.5 inline-flex items-center gap-3.25 border-b border-line pb-1.75 text-xs font-semibold"
         >
           Take a look around
@@ -118,7 +120,12 @@ export default function HomeSections() {
 
   return (
     <div className="text-paper">
-      <section className={`${section} py-30 max-sm:py-20`} aria-labelledby="playing-title">
+      <section
+        className={`${section} scroll-mt-25 py-30 max-sm:scroll-mt-28 max-sm:py-20`}
+        id="now-playing"
+        tabIndex={-1}
+        aria-labelledby="playing-title"
+      >
         <Reveal className="mb-13.75 max-sm:mb-9">
           <h2 id="playing-title" className={`${sectionTitle} text-4xl md:text-5xl lg:text-6xl`}>
             Now <em>playing.</em>
@@ -145,34 +152,45 @@ export default function HomeSections() {
         </Reveal>
         <div className="border-t border-line">
           {meals?.map((meal) => (
-            <Link key={meal._id} className="supper-meal" to={`/recipes/${meal.slug}`}>
-              <div className="supper-meal-art rounded-media" aria-hidden="true">
-                {meal.imageUrl && (
-                  <img
-                    src={meal.imageUrl}
-                    alt=""
-                    className="absolute inset-0 h-full w-full object-cover"
-                  />
-                )}
-                {meal.course && (
-                  <span className="absolute bottom-3 left-3.5 rounded-full bg-paper px-2.25 py-1 font-mono text-xs tracking-[0.07em] text-[#262323]">
-                    {meal.course}
-                  </span>
-                )}
-              </div>
-              <Reveal className="supper-meal-copy">
-                <h3 className="mb-2 text-xl leading-[1.15] tracking-[-0.04em] md:text-2xl lg:text-3xl">
-                  {meal.name}
-                </h3>
-                <p className="mb-3 text-xs text-muted">{meal.summary}</p>
-                {meal.title && (
-                  <span className={`${mono} text-muted`}>
-                    {meal.title.name}
-                    {meal.title.year ? ` · ${meal.title.year}` : ""}
-                  </span>
-                )}
-              </Reveal>
-            </Link>
+            <DetailLink
+              key={meal._id}
+              className="supper-meal"
+              section="recipes"
+              slug={meal.slug}
+              preview={{ name: meal.name, imageUrl: meal.imageUrl, description: meal.summary }}
+            >
+              {(imageStyle) => (
+                <>
+                  <div className="supper-meal-art rounded-media" aria-hidden="true">
+                    {meal.imageUrl && (
+                      <img
+                        src={meal.imageUrl}
+                        alt=""
+                        style={imageStyle}
+                        className="absolute inset-0 h-full w-full rounded-media object-cover"
+                      />
+                    )}
+                    {meal.course && (
+                      <span className="absolute bottom-3 left-3.5 rounded-full bg-paper px-2.25 py-1 font-mono text-xs tracking-[0.07em] text-[#262323]">
+                        {meal.course}
+                      </span>
+                    )}
+                  </div>
+                  <Reveal className="supper-meal-copy">
+                    <h3 className="mb-2 text-xl leading-[1.15] tracking-[-0.04em] md:text-2xl lg:text-3xl">
+                      {meal.name}
+                    </h3>
+                    <p className="mb-3 text-xs text-muted">{meal.summary}</p>
+                    {meal.title && (
+                      <span className={`${mono} text-muted`}>
+                        {meal.title.name}
+                        {meal.title.year ? ` · ${meal.title.year}` : ""}
+                      </span>
+                    )}
+                  </Reveal>
+                </>
+              )}
+            </DetailLink>
           ))}
         </div>
         <div className="mt-8.5 flex justify-end max-sm:justify-start">

@@ -1,11 +1,10 @@
 import { useQuery } from "convex/react"
 import type { FunctionReturnType } from "convex/server"
-import { useEffect, useRef } from "react"
-import { Link, useLocation, useParams, useSearchParams, useViewTransitionState } from "react-router"
+import { Link, useLocation, useParams, useSearchParams } from "react-router"
 import { api } from "../../convex/_generated/api"
 import Comments from "../components/comments.tsx"
+import { DetailLink, detailColumns, useDetailImage } from "../components/detail-link.tsx"
 import DinnerTickets, { DinnerFacts } from "../components/dinner-tickets.tsx"
-import { moviePosterTransition, type MoviePreview } from "../components/movie-link.tsx"
 import { Empty, Field, Loading, NotFound, Page, Poster, Select } from "../components/ui.tsx"
 import { longDate, time, youtubeId } from "../lib.ts"
 
@@ -13,17 +12,13 @@ export default function Title() {
   const { slug = "" } = useParams()
   const { state } = useLocation()
   const [params, setParams] = useSearchParams()
-  const transitioning = useViewTransitionState(`/titles/${slug}`)
-  const heading = useRef<HTMLHeadingElement>(null)
+  const { preview, imageStyle, headingRef } = useDetailImage("titles", slug)
   const title = useQuery(api.titles.get, { slug })
-  const preview = state as MoviePreview | null
-  const movie = title ?? (preview?.slug === slug ? preview : null)
-
-  useEffect(() => {
-    if (preview?.slug === slug) heading.current?.focus({ preventScroll: true })
-  }, [preview, slug])
 
   if (title === null) return <NotFound what="title" />
+  const movie = title
+    ? { name: title.name, description: title.synopsis, imageUrl: title.posterUrl }
+    : preview
   if (!movie) return <Loading />
 
   const upcoming = title?.events
@@ -32,31 +27,24 @@ export default function Title() {
   const dinner = upcoming?.find((event) => event.slug === params.get("dinner")) ?? upcoming?.[0]
 
   return (
-    <Page>
-      <div
-        className="grid items-start gap-8 md:grid-cols-[minmax(0,1fr)_minmax(0,1.85fr)] md:gap-12"
-        data-movie-transition={transitioning || undefined}
-      >
+    <Page wide>
+      <div className={detailColumns} data-detail-transition={imageStyle ? true : undefined}>
         <Poster
-          url={movie.posterUrl}
+          url={movie.imageUrl}
           name={movie.name}
-          style={transitioning ? moviePosterTransition : undefined}
-          className="w-full max-w-56 md:max-w-none"
+          style={imageStyle}
+          className="w-full max-w-120"
         />
         <div className="min-w-0">
           <h1
-            ref={heading}
+            ref={headingRef}
             tabIndex={-1}
             className="font-display text-5xl leading-none tracking-tight text-paper focus:outline-none md:text-7xl"
           >
             {movie.name}
           </h1>
-          <p className="mt-3 font-mono text-sm text-muted">
-            {movie.kind === "show" ? "Show" : "Movie"}
-            {movie.year ? ` · ${movie.year}` : ""}
-          </p>
-          {movie.synopsis && (
-            <p className="mt-5 max-w-2xl text-lg text-neutral-300">{movie.synopsis}</p>
+          {movie.description && (
+            <p className="mt-5 max-w-2xl text-lg text-neutral-300">{movie.description}</p>
           )}
           {dinner && upcoming ? (
             <>
@@ -74,7 +62,7 @@ export default function Title() {
                     >
                       {upcoming.map((event) => (
                         <option key={event._id} value={event.slug}>
-                          {longDate(event.startsAt)} · {time(event.startsAt)} · {event.venue}
+                          {longDate(event.startsAt)} · {time(event.startsAt)}
                         </option>
                       ))}
                     </Select>
@@ -82,7 +70,6 @@ export default function Title() {
                 </div>
               )}
               <DinnerFacts dinner={dinner} />
-              {dinner.note && <p className="mt-4 text-sm text-muted">{dinner.note}</p>}
               <DinnerTickets key={dinner._id} dinner={dinner} />
               <Link
                 to={`/events/${dinner.slug}`}
@@ -120,24 +107,33 @@ function TitleRecipes({
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {title.recipes.map((r) => {
                 const yt = youtubeId(r.videoUrl)
+                const imageUrl =
+                  r.imageUrl ?? (yt ? `https://i.ytimg.com/vi/${yt}/hqdefault.jpg` : null)
                 return (
-                  <Link
+                  <DetailLink
                     key={r._id}
-                    to={`/recipes/${r.slug}`}
+                    section="recipes"
+                    slug={r.slug}
+                    preview={{ name: r.name, imageUrl, description: r.summary }}
                     className="group overflow-hidden rounded-media border border-white/10 transition hover:border-white/30"
                   >
-                    {yt && (
-                      <img
-                        src={`https://i.ytimg.com/vi/${yt}/hqdefault.jpg`}
-                        alt=""
-                        className="aspect-video w-full rounded-media object-cover opacity-80 transition group-hover:opacity-100"
-                      />
+                    {(imageStyle) => (
+                      <>
+                        {imageUrl && (
+                          <img
+                            src={imageUrl}
+                            alt=""
+                            style={imageStyle}
+                            className="aspect-video w-full rounded-media object-cover opacity-80 transition group-hover:opacity-100"
+                          />
+                        )}
+                        <div className="p-5">
+                          <h3 className="font-display text-2xl text-paper">{r.name}</h3>
+                          <p className="mt-1 text-sm text-neutral-400">{r.summary}</p>
+                        </div>
+                      </>
                     )}
-                    <div className="p-5">
-                      <h3 className="font-display text-2xl text-paper">{r.name}</h3>
-                      <p className="mt-1 text-sm text-neutral-400">{r.summary}</p>
-                    </div>
-                  </Link>
+                  </DetailLink>
                 )
               })}
             </div>

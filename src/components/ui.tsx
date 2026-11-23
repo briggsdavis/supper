@@ -73,8 +73,20 @@ export function Field({
   )
 }
 
-export function Page({ children, className }: { children: ReactNode; className?: string }) {
-  return <div className={cx("mx-auto w-full max-w-6xl px-6 py-12", className)}>{children}</div>
+export function Page({
+  children,
+  className,
+  wide,
+}: {
+  children: ReactNode
+  className?: string
+  wide?: boolean
+}) {
+  return (
+    <div className={cx("mx-auto w-full px-6 py-12", wide ? "max-w-7xl" : "max-w-6xl", className)}>
+      {children}
+    </div>
+  )
 }
 
 export function Heading({ children, className }: { children: ReactNode; className?: string }) {

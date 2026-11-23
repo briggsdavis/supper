@@ -1,7 +1,7 @@
 import { useQuery } from "convex/react"
 import { useSearchParams } from "react-router"
 import { api } from "../../convex/_generated/api"
-import { MovieLink } from "../components/movie-link.tsx"
+import { DetailLink } from "../components/detail-link.tsx"
 import { Empty, Heading, Input, Loading, Page, Poster } from "../components/ui.tsx"
 
 export default function Titles() {
@@ -35,7 +35,13 @@ export default function Titles() {
         ) : (
           <div className="grid grid-cols-2 gap-6 sm:grid-cols-3 lg:grid-cols-5">
             {titles.map((t) => (
-              <MovieLink key={t._id} movie={t} className="group">
+              <DetailLink
+                key={t._id}
+                section="titles"
+                slug={t.slug}
+                preview={{ name: t.name, imageUrl: t.posterUrl, description: t.synopsis }}
+                className="group"
+              >
                 {(posterStyle) => (
                   <>
                     <Poster
@@ -51,7 +57,7 @@ export default function Titles() {
                     </p>
                   </>
                 )}
-              </MovieLink>
+              </DetailLink>
             ))}
           </div>
         )}

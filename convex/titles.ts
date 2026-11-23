@@ -1,7 +1,7 @@
 import { ConvexError, v } from "convex/values"
 import type { Doc } from "./_generated/dataModel"
 import { mutation, query, type QueryCtx } from "./_generated/server"
-import { requireAdmin, uniqueSlug } from "./lib"
+import { requireAdmin, uniqueSlug, withRecipeImage } from "./lib"
 import { vKind } from "./schema"
 
 export async function withPoster(ctx: QueryCtx, title: Doc<"titles">) {
@@ -57,7 +57,7 @@ export const get = query({
       .take(20)
     return {
       ...(await withPoster(ctx, title)),
-      recipes,
+      recipes: await Promise.all(recipes.map((recipe) => withRecipeImage(ctx, recipe))),
       events: events.filter((e) => e.published),
     }
   },
