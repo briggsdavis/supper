@@ -19,7 +19,7 @@ export default function App() {
 
   return (
     <div className="supper-site flex min-h-screen flex-col text-neutral-300 selection:bg-paper selection:text-neutral-950">
-      <header className="pointer-events-none fixed inset-x-0 top-0 z-40 grid min-h-[5.375rem] grid-cols-[1fr_auto_1fr] items-center gap-3 px-[max(6.1vw,1.25rem)] font-sans text-paper *:pointer-events-auto max-md:grid-cols-[1fr_auto] max-md:gap-1.25 max-md:px-3 max-md:pt-2">
+      <header className="supper-header pointer-events-none fixed inset-x-0 top-0 z-40 grid min-h-[5.375rem] grid-cols-[1fr_auto_1fr] items-center gap-3 px-[max(6.1vw,1.25rem)] font-sans text-paper *:pointer-events-auto max-md:grid-cols-[1fr_auto] max-md:gap-1.25 max-md:px-3 max-md:pt-2">
         <Brand
           className={`${pill} px-3 max-md:gap-1.25 max-md:px-2 max-md:text-xs max-[365px]:[&>span:last-child]:sr-only`}
           discClassName="max-md:w-4"

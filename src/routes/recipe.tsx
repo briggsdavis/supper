@@ -25,7 +25,7 @@ export default function Recipe() {
       <p className="mt-4 text-lg text-neutral-300">{recipe.summary}</p>
 
       {yt ? (
-        <div className="mt-8 aspect-video overflow-hidden rounded-2xl border border-white/10">
+        <div className="mt-8 aspect-video overflow-hidden rounded-media border border-white/10">
           <iframe
             src={`https://www.youtube-nocookie.com/embed/${yt}`}
             title={recipe.name}

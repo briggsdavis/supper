@@ -3,6 +3,7 @@ import { useEffect, useRef, useState, type MouseEvent } from "react"
 import { Link } from "react-router"
 import { api } from "../../convex/_generated/api"
 import { mono, outlineButton, Reveal, section, sectionTitle } from "./marketing.tsx"
+import { MovieLink } from "./movie-link.tsx"
 
 function scrollToMenu(event: MouseEvent<HTMLAnchorElement>) {
   if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return
@@ -38,8 +39,8 @@ function FilmGallery() {
           key={film._id}
           className={`supper-film-card min-w-0 flex-1 max-sm:basis-auto ${active === null ? "" : active === index ? "grow-[1.15]" : "grow-[0.925]"}`}
         >
-          <Link
-            to={`/titles/${film.slug}`}
+          <MovieLink
+            movie={film}
             onPointerEnter={(event) => {
               if (event.pointerType !== "touch") activate(index)
             }}
@@ -47,29 +48,34 @@ function FilmGallery() {
             onBlur={deactivate}
             className="block"
           >
-            <div className="relative aspect-9/16 overflow-hidden bg-neutral-900">
-              {film.posterUrl && (
-                <img
-                  src={film.posterUrl}
-                  alt=""
-                  className="absolute inset-0 h-full w-full object-cover"
-                />
-              )}
-              {film.year && (
-                <span
-                  className={`${mono} absolute right-4.25 bottom-4.75 [text-shadow:0_1px_0.5rem_#000]`}
-                >
-                  {film.year}
-                </span>
-              )}
-            </div>
-            <h3 className="pt-4.25 text-xl leading-[1.25]">{film.name}</h3>
-            {film.recipeName && (
-              <span className="mt-2 block font-mono text-xs tracking-[0.06em] text-muted">
-                Served with {film.recipeName}
-              </span>
+            {(posterStyle) => (
+              <>
+                <div className="relative aspect-9/16 overflow-hidden rounded-media bg-neutral-900">
+                  {film.posterUrl && (
+                    <img
+                      src={film.posterUrl}
+                      alt=""
+                      style={posterStyle}
+                      className="absolute inset-0 h-full w-full rounded-media object-cover"
+                    />
+                  )}
+                  {film.year && (
+                    <span
+                      className={`${mono} absolute right-4.25 bottom-4.75 [text-shadow:0_1px_0.5rem_#000]`}
+                    >
+                      {film.year}
+                    </span>
+                  )}
+                </div>
+                <h3 className="pt-4.25 text-xl leading-[1.25]">{film.name}</h3>
+                {film.recipeName && (
+                  <span className="mt-2 block font-mono text-xs tracking-[0.06em] text-muted">
+                    Served with {film.recipeName}
+                  </span>
+                )}
+              </>
             )}
-          </Link>
+          </MovieLink>
         </Reveal>
       ))}
     </div>
@@ -112,6 +118,20 @@ export default function HomeSections() {
 
   return (
     <div className="text-paper">
+      <section className={`${section} py-30 max-sm:py-20`} aria-labelledby="playing-title">
+        <Reveal className="mb-13.75 max-sm:mb-9">
+          <h2 id="playing-title" className={`${sectionTitle} text-4xl md:text-5xl lg:text-6xl`}>
+            Now <em>playing.</em>
+          </h2>
+        </Reveal>
+        <FilmGallery />
+        <div className="mt-12 flex justify-center max-sm:mt-8.5">
+          <Link to="/titles" className={outlineButton}>
+            Discover more films
+          </Link>
+        </div>
+      </section>
+
       <section
         className={`${section} scroll-mt-25 py-30 max-sm:scroll-mt-28 max-sm:py-20`}
         id="menu"
@@ -126,7 +146,7 @@ export default function HomeSections() {
         <div className="border-t border-line">
           {meals?.map((meal) => (
             <Link key={meal._id} className="supper-meal" to={`/recipes/${meal.slug}`}>
-              <div className="supper-meal-art" aria-hidden="true">
+              <div className="supper-meal-art rounded-media" aria-hidden="true">
                 {meal.imageUrl && (
                   <img
                     src={meal.imageUrl}
@@ -158,20 +178,6 @@ export default function HomeSections() {
         <div className="mt-8.5 flex justify-end max-sm:justify-start">
           <Link to="/contact" className={outlineButton} viewTransition>
             Make it a movie night
-          </Link>
-        </div>
-      </section>
-
-      <section className={`${section} py-30 max-sm:py-20`}>
-        <Reveal className="mb-13.75 max-sm:mb-9">
-          <h2 className={`${sectionTitle} text-4xl md:text-5xl lg:text-6xl`}>
-            Now <em>playing.</em>
-          </h2>
-        </Reveal>
-        <FilmGallery />
-        <div className="mt-12 flex justify-center max-sm:mt-8.5">
-          <Link to="/titles" className={outlineButton}>
-            Discover more films
           </Link>
         </div>
       </section>

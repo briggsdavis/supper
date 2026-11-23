@@ -10,12 +10,13 @@ export default function EventCard({ event }: { event: UpcomingEvent }) {
   const left = event.capacity - event.sold
   const name = event.title?.name ?? "Dinner"
   return (
-    <Link
-      to={`/events/${event.slug}`}
-      className="group flex gap-5 rounded-2xl border border-white/10 p-4 transition hover:border-white/30 hover:bg-white/[0.03]"
-    >
-      <Poster url={event.title?.posterUrl} name={name} className="w-24 shrink-0 text-base" />
-      <div className="flex min-w-0 flex-1 flex-col justify-between py-1">
+    <Link to={`/events/${event.slug}`} className="group flex items-start gap-5">
+      <Poster
+        url={event.title?.posterUrl}
+        name={name}
+        className="w-24 shrink-0 text-base motion-safe:transition motion-safe:group-hover:-translate-y-1"
+      />
+      <div className="flex min-w-0 flex-1 flex-col gap-3 py-1">
         <div>
           <h3 className="font-display text-2xl text-paper">{name}</h3>
           <p className="mt-1 font-mono text-sm text-neutral-300">

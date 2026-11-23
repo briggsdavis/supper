@@ -1,7 +1,4 @@
-import { useQuery } from "convex/react"
 import { useEffect, useRef } from "react"
-import { Link } from "react-router"
-import { api } from "../../convex/_generated/api"
 import { useMe } from "../components/auth.tsx"
 import ChromeCanvas from "../components/chrome-canvas.tsx"
 import HomeSections, { HomeIntro } from "../components/home-sections.tsx"
@@ -79,46 +76,18 @@ export default function Home() {
 }
 
 function HomeListings() {
-  const recipes = useQuery(api.recipes.latest)
   const { me } = useMe()
 
+  if (me) return null
   return (
-    <>
-      {recipes && recipes.length > 0 && (
-        <Page>
-          <div className="flex items-end justify-between gap-4">
-            <h2 className="font-display text-4xl text-paper">Cook the scene at home</h2>
-            <Link to="/titles" className="text-sm text-neutral-400 hover:text-paper">
-              All recipes
-            </Link>
-          </div>
-          <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {recipes.map((r) => (
-              <Link
-                key={r._id}
-                to={`/recipes/${r.slug}`}
-                className="rounded-2xl border border-white/10 p-6 transition hover:border-white/30"
-              >
-                <h3 className="font-display text-2xl text-paper">{r.name}</h3>
-                <p className="text-sm text-neutral-500">From {r.title?.name}</p>
-                <p className="mt-2 text-sm text-neutral-400">{r.summary}</p>
-              </Link>
-            ))}
-          </div>
-        </Page>
-      )}
-
-      {!me && (
-        <Page className="text-center">
-          <h2 className="font-display text-4xl text-paper">Save a seat for the next one</h2>
-          <p className="mx-auto mt-3 max-w-md text-neutral-400">
-            Make an account and we'll email you when new dinners open.
-          </p>
-          <ButtonLink to="/sign-in" className="mt-6">
-            Get alerts
-          </ButtonLink>
-        </Page>
-      )}
-    </>
+    <Page className="text-center">
+      <h2 className="font-display text-4xl text-paper">Save a seat for the next one</h2>
+      <p className="mx-auto mt-3 max-w-md text-neutral-400">
+        Make an account and we'll email you when new dinners open.
+      </p>
+      <ButtonLink to="/sign-in" className="mt-6">
+        Get alerts
+      </ButtonLink>
+    </Page>
   )
 }

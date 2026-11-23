@@ -1,5 +1,6 @@
 import type {
   ButtonHTMLAttributes,
+  CSSProperties,
   InputHTMLAttributes,
   ReactNode,
   SelectHTMLAttributes,
@@ -88,17 +89,20 @@ export function Poster({
   url,
   name,
   className,
+  style,
 }: {
   url: string | null | undefined
   name: string
   className?: string
+  style?: CSSProperties
 }) {
   return (
     <div
       className={cx(
-        "relative aspect-[2/3] overflow-hidden rounded-xl border border-white/10 bg-neutral-900",
+        "relative aspect-[2/3] overflow-hidden rounded-media bg-neutral-900",
         className,
       )}
+      style={style}
     >
       {url ? (
         <img src={url} alt={name} className="h-full w-full object-cover" />

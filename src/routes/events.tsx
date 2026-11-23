@@ -15,7 +15,7 @@ export default function Events() {
         ) : events.length === 0 ? (
           <Empty>No dinners on the calendar yet. Check back soon.</Empty>
         ) : (
-          <div className="grid gap-4 md:grid-cols-2">
+          <div className="grid gap-x-10 gap-y-8 md:grid-cols-2">
             {events.map((e) => (
               <EventCard key={e._id} event={e} />
             ))}
