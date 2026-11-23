@@ -40,7 +40,10 @@ export default function Home() {
   return (
     <>
       <section ref={heroRef} className="relative" aria-labelledby="hero-title">
-        <div className="supper-hero-art pointer-events-none absolute inset-0" aria-hidden="true">
+        <div
+          className="pointer-events-none absolute inset-0 [mask-image:linear-gradient(to_bottom,black_65%,transparent)] mix-blend-screen"
+          aria-hidden="true"
+        >
           <div className="sticky top-0 h-svh overflow-hidden">
             <div className="absolute inset-0 md:left-1/3 md:translate-x-[calc(var(--morph,0)*-25%)]">
               <ChromeCanvas
@@ -50,7 +53,7 @@ export default function Home() {
             </div>
           </div>
         </div>
-        <div className="relative z-10 mx-auto flex min-h-svh max-w-6xl flex-col justify-end px-6 pt-24 pb-16">
+        <div className="relative z-10 mx-auto flex min-h-svh max-w-6xl flex-col justify-end px-6 pt-24 pb-28">
           <h1
             id="hero-title"
             className="font-display text-7xl leading-[0.9] font-medium tracking-[-0.075em] text-paper sm:text-8xl md:text-9xl"

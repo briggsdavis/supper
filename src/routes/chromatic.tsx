@@ -874,7 +874,7 @@ function SplitDemo({ text }: { text: string }) {
       </svg>
       <div className="flex h-full flex-col items-center justify-center gap-5 [filter:url(#ca-split)]">
         <h2 className="font-serif text-[15cqw] leading-none font-bold text-white italic">{text}</h2>
-        <p className="text-[2.2cqw] tracking-[0.4em] text-white/80 uppercase">Dinner and a show</p>
+        <p className="text-[2.2cqw] tracking-[0.4em] text-white/80">Dinner and a show</p>
         <div className="flex items-center gap-4">
           <button className="rounded-full border-2 border-white px-6 py-2.5 text-sm font-semibold text-white">
             Reserve a seat
@@ -914,7 +914,7 @@ function FoilCardDemo({ text }: { text: string }) {
         className="foil-card @container relative aspect-[5/7] w-[38%] overflow-hidden rounded-2xl shadow-2xl shadow-black/60"
       >
         <div className="absolute inset-0 flex flex-col justify-between p-[7cqw]">
-          <span className="foil-text text-[7cqw] font-bold tracking-[0.3em] uppercase">Scenes</span>
+          <span className="foil-text text-[7cqw] font-bold tracking-[0.3em]">Scenes</span>
           <span className="foil-text text-[22cqw] leading-none font-black break-words">{text}</span>
           <span className="foil-text text-[6cqw] font-semibold tracking-widest">No. 001</span>
         </div>

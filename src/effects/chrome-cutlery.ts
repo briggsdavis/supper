@@ -7,6 +7,8 @@ uniform float uTilt;
 uniform float uMorph;
 uniform float uDrop;
 uniform float uPrism;
+uniform float uFlat;
+uniform float uLay;
 
 float cro(vec2 a, vec2 b) { return a.x * b.y - a.y * b.x; }
 
@@ -113,13 +115,16 @@ vec3 group(vec3 p) {
   p.y += uDrop * (1.0 - curl());
   p /= uScale;
   p.xy = rot(-uAngle) * p.xy;
-  p.yz = rot(-0.3 - uLight.y * 0.06 * uTilt) * p.yz;
-  p.xz = rot(-uLight.x * 0.08 * uTilt) * p.xz;
+  p.yz = rot((-0.3 - uLight.y * 0.06 * uTilt) * (1.0 - uFlat)) * p.yz;
+  p.xz = rot(-uLight.x * 0.08 * uTilt * (1.0 - uFlat)) * p.xz;
   p.y -= 0.15 * (1.0 - curl());
-  float sway = smoothstep(0.7, 1.0, uMorph);
+  float sway = smoothstep(0.7, 1.0, uMorph) * (1.0 - uFlat);
   p.y -= 0.02 * sin(uTime * 0.5 + 1.0) * sway;
   p.xz = rot(0.45 * sin(uTime * 0.29 + 0.8) * sway) * p.xz;
   p.yz = rot(0.25 * sin(uTime * 0.23) * sway) * p.yz;
+  p.yz = rot(uLay + 0.05 * sin(uTime * 0.4) * uFlat) * p.yz;
+  p.xz = rot(0.04 * sin(uTime * 0.31) * uFlat) * p.xz;
+  p.xy = rot(uTime * 0.15 * uFlat) * p.xy;
   return p;
 }
 
@@ -225,6 +230,7 @@ vec3 prism(vec3 l, vec3 n, vec3 V, float wobble) {
   n = normalize(n - min(dot(n, V), 0.0) * V);
   float nv = max(dot(n, V), 0.0);
   vec3 R = reflect(-V, n);
+  R.yz = rot(uLay * 0.8) * R.yz;
   vec3 shift = normalize(n - R * dot(n, R) + 1e-4);
   float amt = 0.22 + 0.3 * pow(1.0 - nv, 1.5);
   vec3 col = vec3(0.0);
@@ -278,6 +284,7 @@ export function createChromeCutlery(
   morph?: () => number,
   drop = 0,
   prismCoat = false,
+  lay?: number,
 ): ChromeScene | null {
   const march = createMarch(canvas, palette, SCENE)
   if (!march) return null
@@ -287,6 +294,8 @@ export function createChromeCutlery(
   const uMorph = march.uniform("uMorph")
   const uDrop = march.uniform("uDrop")
   const uPrism = march.uniform("uPrism")
+  const uFlat = march.uniform("uFlat")
+  const uLay = march.uniform("uLay")
   let progress = 0
   let lastTime: number | undefined
 
@@ -316,7 +325,14 @@ export function createChromeCutlery(
       gl.uniform1f(uMorph, m)
       gl.uniform1f(uDrop, drop)
       gl.uniform1f(uPrism, prismCoat ? 1 : 0)
-      march.draw(time, lightX, lightY, scale + (Math.min(scale, 1) - scale) * m)
+      gl.uniform1f(uFlat, lay === undefined ? 0 : 1)
+      gl.uniform1f(uLay, lay ?? 0)
+      march.draw(
+        time,
+        lightX,
+        lightY,
+        (scale + (Math.min(scale, 1) - scale) * m) * (lay === undefined ? 1 : 1.7),
+      )
       lens.present(time, angle, 0.3 * (1 - m), upright ? 0 : 1 - 0.6 * m)
     },
     dispose() {
