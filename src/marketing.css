@@ -223,18 +223,6 @@
   color: var(--site-ink);
 }
 
-.supper-arrow {
-  display: inline-block;
-  font-size: 1rem;
-  line-height: 1;
-  transition: transform 0.72s var(--site-ease);
-}
-
-.supper-site :is(a, button):is(:hover, :focus-visible) > .supper-arrow,
-.supper-film-card a:is(:hover, :focus-visible) .supper-arrow {
-  transform: rotate(45deg);
-}
-
 .supper-menu {
   padding-block: 7.5rem;
   scroll-margin-top: 6.25rem;
@@ -266,7 +254,7 @@
 
 .supper-meal {
   display: grid;
-  grid-template-columns: 9% 28% minmax(0, 1fr) 2rem;
+  grid-template-columns: 9% 28% minmax(0, 1fr);
   align-items: center;
   gap: 2.4%;
   min-height: 13.4375rem;
@@ -400,7 +388,7 @@
 
 @media (hover: hover) {
   .supper-meal:hover {
-    grid-template-columns: 8% 42% minmax(0, 1fr) 2rem;
+    grid-template-columns: 8% 42% minmax(0, 1fr);
     min-height: 23.5rem;
   }
   .supper-meal:hover .supper-meal-art {
@@ -412,7 +400,7 @@
 }
 
 .supper-meal:focus-visible {
-  grid-template-columns: 8% 42% minmax(0, 1fr) 2rem;
+  grid-template-columns: 8% 42% minmax(0, 1fr);
   min-height: 23.5rem;
 }
 .supper-meal:focus-visible .supper-meal-art {
@@ -474,7 +462,7 @@
   position: relative;
   display: flex;
   align-items: start;
-  height: 24.375rem;
+  aspect-ratio: 9 / 16;
   overflow: hidden;
   padding: 1.0625rem;
   background: linear-gradient(145deg, var(--art-dark), var(--art-mid) 58%, var(--art-light));
@@ -794,9 +782,6 @@
   .supper-meal:focus-visible .supper-meal-art {
     height: 17.5rem;
   }
-  .supper-poster {
-    height: 20rem;
-  }
 }
 
 @media (max-width: 900px) and (hover: hover) {
@@ -892,7 +877,7 @@
   }
   .supper-meal,
   .supper-meal:is(:hover, :focus-visible) {
-    grid-template-columns: 1.75rem minmax(0, 1fr) 1.25rem;
+    grid-template-columns: 1.75rem minmax(0, 1fr);
     grid-template-rows: auto auto;
     min-height: 0;
     gap: 0.8125rem;
@@ -918,9 +903,6 @@
   }
   .supper-meal:is(:hover, :focus-visible) .supper-meal-copy {
     translate: none;
-  }
-  .supper-meal > .supper-arrow {
-    grid-area: 1 / 3;
   }
   .supper-menu-cta {
     align-items: start;
@@ -968,15 +950,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .supper-site
-    :is(
-      .supper-reveal,
-      .supper-disc,
-      .supper-meal,
-      .supper-meal-art,
-      .supper-arrow,
-      .supper-button
-    ),
+  .supper-site :is(.supper-reveal, .supper-disc, .supper-meal, .supper-meal-art, .supper-button),
   .supper-contact :is(h1, p, label, button),
   ::view-transition-old(root),
   ::view-transition-new(root) {

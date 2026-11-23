@@ -1,6 +1,6 @@
 import { NavLink, Outlet, ScrollRestoration, useMatch } from "react-router"
 import { useMe } from "./components/auth.tsx"
-import { Arrow, Brand, SiteFooter } from "./components/marketing.tsx"
+import { Brand, SiteFooter } from "./components/marketing.tsx"
 import { useWeightedScroll } from "./use-weighted-scroll.ts"
 import "./marketing.css"
 
@@ -29,7 +29,7 @@ export default function App() {
             </div>
           )}
           <NavLink to="/contact" className="supper-button supper-button-solid" viewTransition>
-            Contact <Arrow />
+            Contact
           </NavLink>
         </div>
       </header>

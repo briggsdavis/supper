@@ -1,5 +1,5 @@
 import type { FormEvent } from "react"
-import { Arrow, Disc } from "../components/marketing.tsx"
+import { Disc } from "../components/marketing.tsx"
 
 function openEmailDraft(event: FormEvent<HTMLFormElement>) {
   event.preventDefault()
@@ -43,7 +43,7 @@ export default function Contact() {
             <textarea name="message" rows={3} placeholder="Tell us the scene…" required />
           </label>
           <button className="supper-button supper-button-solid" type="submit">
-            Open email draft <Arrow />
+            Open email draft
           </button>
         </form>
       </div>

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, type MouseEvent } from "react"
 import { Link } from "react-router"
-import { Arrow, Reveal } from "./marketing.tsx"
+import { Reveal } from "./marketing.tsx"
 
 const features = [
   {
@@ -93,7 +93,6 @@ function FilmGallery() {
             </div>
             <div className="supper-film-title">
               <h3>{film.film}</h3>
-              <Arrow />
             </div>
             <span className="supper-film-caption">A MENU IN THREE ACTS</span>
           </Link>
@@ -116,7 +115,7 @@ export function HomeIntro() {
         <p>Some films make you hungry.</p>
         <p>We pair a film with a menu from its world, timed to the scenes and made for sharing.</p>
         <a href="#menu" onClick={scrollToMenu} className="supper-text-link">
-          Take a look around <Arrow />
+          Take a look around
         </a>
       </Reveal>
     </section>
@@ -159,14 +158,13 @@ export default function HomeSections() {
                   {meal.film} · {meal.year}
                 </span>
               </Reveal>
-              <Arrow />
             </Link>
           ))}
         </div>
         <div className="supper-menu-cta">
           <span>THE MENU CHANGES WITH THE MOOD.</span>
           <Link to="/contact" className="supper-button" viewTransition>
-            Make it a movie night <Arrow />
+            Make it a movie night
           </Link>
         </div>
       </section>
@@ -174,7 +172,7 @@ export default function HomeSections() {
       <section className="supper-section supper-films">
         <Reveal className="supper-section-heading">
           <h2>
-            Now showing <em>at home.</em>
+            Now <em>playing.</em>
           </h2>
           <p>
             A few films we think
@@ -184,7 +182,7 @@ export default function HomeSections() {
         <FilmGallery />
         <div className="supper-film-cta">
           <Link to="/titles" className="supper-button">
-            Discover more films <Arrow />
+            Discover more films
           </Link>
         </div>
       </section>

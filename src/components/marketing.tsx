@@ -80,14 +80,6 @@ export function Disc({ followPointer = false }: { followPointer?: boolean }) {
   )
 }
 
-export function Arrow() {
-  return (
-    <span className="supper-arrow" aria-hidden="true">
-      ↗
-    </span>
-  )
-}
-
 export function Brand() {
   return (
     <Link className="supper-brand" to="/" viewTransition>
@@ -109,14 +101,14 @@ export function SiteFooter() {
           <br /> a <em>little</em> more cinematic.
         </h2>
         <Link to="/contact" className="supper-button" viewTransition>
-          Let’s plan a night <Arrow />
+          Let’s plan a night
         </Link>
       </Reveal>
       <div className="supper-footer-meta">
         <Brand />
         <span>MAKE TONIGHT A CINEMA.</span>
         <a href="https://socialsatisfaction.agency" target="_blank" rel="noreferrer">
-          Made by Social Satisfaction <Arrow />
+          Made by Social Satisfaction
         </a>
       </div>
     </footer>
