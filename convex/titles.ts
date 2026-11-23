@@ -22,6 +22,23 @@ export const list = query({
   },
 })
 
+export const featured = query({
+  args: {},
+  handler: async (ctx) => {
+    const titles = await ctx.db.query("titles").order("desc").take(20)
+    const withPosters = titles.filter((t) => t.posterId).slice(0, 3)
+    return await Promise.all(
+      withPosters.map(async (t) => {
+        const recipe = await ctx.db
+          .query("recipes")
+          .withIndex("by_titleId", (q) => q.eq("titleId", t._id))
+          .first()
+        return { ...(await withPoster(ctx, t)), recipeName: recipe?.name ?? null }
+      }),
+    )
+  },
+})
+
 export const get = query({
   args: { slug: v.string() },
   handler: async (ctx, args) => {

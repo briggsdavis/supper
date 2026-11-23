@@ -19,9 +19,6 @@ export default function AdminLayout() {
           <NavLink to="/admin/titles" className={tab}>
             Titles & recipes
           </NavLink>
-          <NavLink to="/admin/homepage" className={tab}>
-            Homepage
-          </NavLink>
         </div>
         <Outlet />
       </Page>

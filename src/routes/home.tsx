@@ -4,18 +4,15 @@ import { Link } from "react-router"
 import { api } from "../../convex/_generated/api"
 import { useMe } from "../components/auth.tsx"
 import ChromeCanvas from "../components/chrome-canvas.tsx"
-import EventCard from "../components/event-card.tsx"
 import HomeSections, { HomeIntro } from "../components/home-sections.tsx"
-import { ButtonLink, Page, Poster } from "../components/ui.tsx"
+import { ButtonLink, Page } from "../components/ui.tsx"
 import { createChromeCutlery } from "../effects/chrome-cutlery.ts"
-import { longDate, money, time, TODAY } from "../lib.ts"
 
 const morph = { value: 0 }
 const createHeroCutlery = (canvas: HTMLCanvasElement) =>
   createChromeCutlery(canvas, "flame", false, () => morph.value, 0.14, true)
 
 export default function Home() {
-  const showContent = useQuery(api.siteSettings.homepageContent) === true
   const heroRef = useRef<HTMLElement>(null)
 
   useEffect(() => {
@@ -24,7 +21,7 @@ export default function Home() {
     const update = () => {
       const rect = hero.getBoundingClientRect()
       const travel = Math.max(1, rect.height - window.innerHeight)
-      const p = showContent ? Math.max(0, Math.min(1, -rect.top / travel)) : 0
+      const p = Math.max(0, Math.min(1, -rect.top / travel))
       morph.value = p
       hero.style.setProperty("--morph", String(p * p * (3 - 2 * p)))
     }
@@ -35,7 +32,7 @@ export default function Home() {
       window.removeEventListener("scroll", update)
       window.removeEventListener("resize", update)
     }
-  }, [showContent])
+  }, [])
 
   return (
     <>
@@ -72,71 +69,21 @@ export default function Home() {
             </ButtonLink>
           </div>
         </div>
-        {showContent && <HomeIntro />}
+        <HomeIntro />
       </section>
 
-      {showContent && (
-        <>
-          <HomeSections />
-          <HomeListings />
-        </>
-      )}
+      <HomeSections />
+      <HomeListings />
     </>
   )
 }
 
 function HomeListings() {
-  const events = useQuery(api.events.upcoming, { after: TODAY })
   const recipes = useQuery(api.recipes.latest)
   const { me } = useMe()
-  const [next, ...rest] = events ?? []
 
   return (
     <>
-      {next && (
-        <Page>
-          <h2 className="font-display text-3xl text-paper">Next dinner</h2>
-          <Link
-            to={`/events/${next.slug}`}
-            className="group mt-6 grid gap-8 md:grid-cols-[16rem_1fr]"
-          >
-            <Poster
-              url={next.title?.posterUrl}
-              name={next.title?.name ?? "Dinner"}
-              className="w-48 md:w-64"
-            />
-            <div className="flex flex-col justify-center">
-              <h3 className="font-display text-5xl text-paper md:text-7xl">{next.title?.name}</h3>
-              <p className="mt-3 font-mono text-base text-paper">
-                {longDate(next.startsAt)} · {time(next.startsAt)}
-              </p>
-              <p className="mt-4 max-w-xl text-neutral-400">{next.title?.synopsis}</p>
-              <ul className="mt-6 space-y-1 text-neutral-300">
-                {next.menu.map((c, i) => (
-                  <li key={i}>
-                    <span className="text-neutral-500">{c.course}:</span> {c.dish}
-                  </li>
-                ))}
-              </ul>
-              <p className="mt-6 font-mono text-sm text-paper">
-                {money(next.priceCents)} · {Math.max(0, next.capacity - next.sold)} seats left
-              </p>
-            </div>
-          </Link>
-        </Page>
-      )}
-
-      {rest.length > 0 && (
-        <Page className="pt-0">
-          <h2 className="font-display text-3xl text-paper">Also coming up</h2>
-          <div className="mt-6 grid gap-4 md:grid-cols-2">
-            {rest.slice(0, 4).map((e) => (
-              <EventCard key={e._id} event={e} />
-            ))}
-          </div>
-        </Page>
-      )}
-
       {recipes && recipes.length > 0 && (
         <Page>
           <div className="flex items-end justify-between gap-4">

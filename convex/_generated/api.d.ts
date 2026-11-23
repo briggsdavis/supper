@@ -18,7 +18,6 @@ import type * as lib from "../lib.js";
 import type * as orders from "../orders.js";
 import type * as recipes from "../recipes.js";
 import type * as seed from "../seed.js";
-import type * as siteSettings from "../siteSettings.js";
 import type * as stripe from "../stripe.js";
 import type * as titles from "../titles.js";
 import type * as users from "../users.js";
@@ -40,7 +39,6 @@ declare const fullApi: ApiFromModules<{
   orders: typeof orders;
   recipes: typeof recipes;
   seed: typeof seed;
-  siteSettings: typeof siteSettings;
   stripe: typeof stripe;
   titles: typeof titles;
   users: typeof users;

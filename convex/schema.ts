@@ -6,11 +6,6 @@ export const vCourse = v.object({ course: v.string(), dish: v.string() })
 export const vOrderStatus = v.union(v.literal("pending"), v.literal("paid"), v.literal("expired"))
 
 export default defineSchema({
-  siteSettings: defineTable({
-    key: v.literal("homepage"),
-    showHomepageContent: v.boolean(),
-  }).index("by_key", ["key"]),
-
   users: defineTable({
     name: v.optional(v.string()),
     alerts: v.optional(v.boolean()),
@@ -32,6 +27,8 @@ export default defineSchema({
     slug: v.string(),
     name: v.string(),
     summary: v.string(),
+    course: v.optional(v.string()),
+    imageId: v.optional(v.id("_storage")),
     videoUrl: v.optional(v.string()),
     sourceUrl: v.optional(v.string()),
     ingredients: v.array(v.string()),

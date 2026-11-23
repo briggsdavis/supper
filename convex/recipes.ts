@@ -26,6 +26,21 @@ export const latest = query({
   },
 })
 
+export const featured = query({
+  args: {},
+  handler: async (ctx) => {
+    const recipes = await ctx.db.query("recipes").take(50)
+    const withImages = recipes.filter((r) => r.imageId).slice(0, 6)
+    return await Promise.all(
+      withImages.map(async (r) => ({
+        ...r,
+        imageUrl: r.imageId ? await ctx.storage.getUrl(r.imageId) : null,
+        title: await ctx.db.get("titles", r.titleId),
+      })),
+    )
+  },
+})
+
 export const byId = query({
   args: { id: v.id("recipes") },
   handler: async (ctx, args) => {
@@ -74,7 +89,7 @@ export const save = mutation({
       steps: clean(fields.steps),
     }
     if (id === undefined) return await ctx.db.insert("recipes", doc)
-    await ctx.db.replace("recipes", id, doc)
+    await ctx.db.patch("recipes", id, doc)
     return id
   },
 })
