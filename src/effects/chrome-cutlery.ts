@@ -9,6 +9,7 @@ uniform float uDrop;
 uniform float uPrism;
 uniform float uFlat;
 uniform float uLay;
+uniform float uDiscTilt;
 
 float cro(vec2 a, vec2 b) { return a.x * b.y - a.y * b.x; }
 
@@ -122,8 +123,9 @@ vec3 group(vec3 p) {
   p.y -= 0.02 * sin(uTime * 0.5 + 1.0) * sway;
   p.xz = rot(0.45 * sin(uTime * 0.29 + 0.8) * sway) * p.xz;
   p.yz = rot(0.25 * sin(uTime * 0.23) * sway) * p.yz;
-  p.yz = rot(uLay + 0.05 * sin(uTime * 0.4) * uFlat) * p.yz;
-  p.xz = rot(0.04 * sin(uTime * 0.31) * uFlat) * p.xz;
+  vec2 discTilt = clamp(uLight, -1.0, 1.0) * uDiscTilt;
+  p.yz = rot(uLay + (0.05 * sin(uTime * 0.4) + discTilt.y) * uFlat) * p.yz;
+  p.xz = rot((0.04 * sin(uTime * 0.31) - discTilt.x) * uFlat) * p.xz;
   p.xy = rot(uTime * 0.15 * uFlat) * p.xy;
   return p;
 }
@@ -285,6 +287,7 @@ export function createChromeCutlery(
   drop = 0,
   prismCoat = false,
   lay?: number,
+  discTilt = 0,
 ): ChromeScene | null {
   const march = createMarch(canvas, palette, SCENE)
   if (!march) return null
@@ -296,16 +299,31 @@ export function createChromeCutlery(
   const uPrism = march.uniform("uPrism")
   const uFlat = march.uniform("uFlat")
   const uLay = march.uniform("uLay")
+  const uDiscTilt = march.uniform("uDiscTilt")
+  const motion = discTilt ? window.matchMedia("(prefers-reduced-motion: reduce)") : null
+  let drewStill = false
   let progress = 0
   let lastTime: number | undefined
 
   return {
     resize(w, h) {
       lens.resize(w, h)
+      drewStill = false
     },
     render(time, lightX, lightY) {
       const { width, height } = lens
       if (!width || !height) return
+      if (motion?.matches) {
+        if (drewStill) return
+        drewStill = true
+        lastTime = undefined
+        time = 0
+        lightX = 0
+        lightY = 0
+      } else if (drewStill) {
+        drewStill = false
+        lastTime = undefined
+      }
       const aspect = width / height
       const angle = upright ? 0 : axisAngle(aspect)
       const length = Math.min(
@@ -327,6 +345,7 @@ export function createChromeCutlery(
       gl.uniform1f(uPrism, prismCoat ? 1 : 0)
       gl.uniform1f(uFlat, lay === undefined ? 0 : 1)
       gl.uniform1f(uLay, lay ?? 0)
+      gl.uniform1f(uDiscTilt, discTilt)
       march.draw(
         time,
         lightX,

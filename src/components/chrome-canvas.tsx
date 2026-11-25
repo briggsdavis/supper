@@ -19,9 +19,11 @@ const clamp = (v: number) => Math.max(-1, Math.min(1, v))
 export default function ChromeCanvas({
   create,
   className = "",
+  viewportPointer = false,
 }: {
   create: (canvas: HTMLCanvasElement) => ChromeScene | null
   className?: string
+  viewportPointer?: boolean
 }) {
   const hostRef = useRef<HTMLDivElement>(null)
 
@@ -61,8 +63,14 @@ export default function ChromeCanvas({
       let tx: number
       let ty: number
       if (now - pointer.t < 2500) {
-        tx = clamp(((pointer.x - rect.left) / rect.width) * 2 - 1) * aspect
-        ty = clamp(-(((pointer.y - rect.top) / rect.height) * 2 - 1))
+        const x = viewportPointer
+          ? pointer.x / window.innerWidth
+          : (pointer.x - rect.left) / rect.width
+        const y = viewportPointer
+          ? pointer.y / window.innerHeight
+          : (pointer.y - rect.top) / rect.height
+        tx = clamp(x * 2 - 1) * aspect
+        ty = clamp(1 - y * 2)
       } else {
         tx = Math.cos(t * 0.3) * aspect * 0.5
         ty = Math.sin(t * 0.45) * 0.5
@@ -80,7 +88,7 @@ export default function ChromeCanvas({
       scene.dispose()
       canvas.remove()
     }
-  }, [create])
+  }, [create, viewportPointer])
 
   return <div ref={hostRef} className={className} />
 }

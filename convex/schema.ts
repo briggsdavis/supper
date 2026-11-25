@@ -4,8 +4,41 @@ import { v } from "convex/values"
 export const vKind = v.union(v.literal("movie"), v.literal("show"))
 export const vCourse = v.object({ course: v.string(), dish: v.string() })
 export const vOrderStatus = v.union(v.literal("pending"), v.literal("paid"), v.literal("expired"))
+export const vPopupLayout = v.union(
+  v.literal("left"),
+  v.literal("right"),
+  v.literal("top"),
+  v.literal("none"),
+)
+export const vAnnouncementFields = {
+  text: v.string(),
+  color: v.string(),
+  link: v.optional(v.string()),
+  active: v.boolean(),
+}
+export const vPopupFields = {
+  title: v.string(),
+  text: v.string(),
+  backgroundColor: v.string(),
+  textColor: v.string(),
+  layout: vPopupLayout,
+  captureEmail: v.boolean(),
+  button: v.optional(v.object({ text: v.string(), color: v.string(), link: v.string() })),
+  active: v.boolean(),
+}
 
 export default defineSchema({
+  announcementBars: defineTable(vAnnouncementFields).index("by_active", ["active"]),
+  popups: defineTable({
+    ...vPopupFields,
+    imageId: v.optional(v.id("_storage")),
+  }).index("by_active", ["active"]),
+  popupSignups: defineTable({
+    popupId: v.id("popups"),
+    popupTitle: v.string(),
+    email: v.string(),
+  }).index("by_popupId_and_email", ["popupId", "email"]),
+
   users: defineTable({
     name: v.optional(v.string()),
     alerts: v.optional(v.boolean()),

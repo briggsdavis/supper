@@ -1,5 +1,5 @@
 import type { FormEvent } from "react"
-import { Disc, solidButton } from "../components/marketing.tsx"
+import { ChromeDisc, solidButton } from "../components/marketing.tsx"
 
 const label =
   "grid gap-1.25 font-mono text-xs tracking-[0.055em] text-muted motion-safe:animate-enter"
@@ -19,53 +19,58 @@ function openEmailDraft(event: FormEvent<HTMLFormElement>) {
 export default function Contact() {
   return (
     <section className="relative isolate overflow-hidden pt-21.5 text-paper max-md:pt-24">
-      <Disc className="top-[15%] -right-45 w-[min(34.375rem,95vw)] opacity-27" />
-      <div className="relative mx-auto flex min-h-[calc(100svh-5.375rem)] w-[min(36.875rem,84vw)] flex-col justify-center pt-8 pb-14 max-md:min-h-[calc(100svh-6rem)]">
-        <h1 className="mb-5 text-4xl leading-none tracking-[-0.06em] motion-safe:animate-enter md:text-5xl">
-          Contact
-        </h1>
-        <p className="mb-7 text-sm leading-[1.7] text-muted motion-safe:animate-enter motion-safe:[animation-delay:120ms]">
-          Have a film in mind, a question, or an opinion about movie snacks? We’re listening.
-        </p>
-        <form onSubmit={openEmailDraft} className="grid gap-5.5">
-          <label className={`${label} motion-safe:[animation-delay:180ms]`}>
-            Your name
-            <input
-              className={field}
-              name="name"
-              autoComplete="name"
-              placeholder="The name on the reservation"
-              required
-            />
-          </label>
-          <label className={`${label} motion-safe:[animation-delay:280ms]`}>
-            Email address
-            <input
-              className={field}
-              name="email"
-              type="email"
-              autoComplete="email"
-              placeholder="you@somewhere.com"
-              required
-            />
-          </label>
-          <label className={`${label} motion-safe:[animation-delay:380ms]`}>
-            What’s on your mind?
-            <textarea
-              className={`${field} resize-y`}
-              name="message"
-              rows={3}
-              placeholder="Tell us the scene…"
-              required
-            />
-          </label>
-          <button
-            className={`${solidButton} justify-self-start motion-safe:animate-enter motion-safe:[animation-delay:500ms]`}
-            type="submit"
-          >
-            Open email draft
-          </button>
-        </form>
+      <div className="relative mx-auto grid min-h-[calc(100svh-5.375rem)] max-w-7xl items-center gap-8 px-[max(5vw,1.5rem)] pt-8 pb-14 max-md:min-h-[calc(100svh-6rem)] md:grid-cols-2 lg:gap-14">
+        <ChromeDisc
+          followPointer
+          className="relative w-full max-w-[38rem] justify-self-center max-md:absolute max-md:top-1/2 max-md:-left-[22vw] max-md:-z-1 max-md:w-[min(88vw,34rem)] max-md:-translate-y-1/2 max-md:opacity-30"
+        />
+        <div className="mx-auto w-full max-w-[36.875rem]">
+          <h1 className="mb-5 text-4xl leading-none tracking-[-0.06em] motion-safe:animate-enter md:text-5xl">
+            Contact
+          </h1>
+          <p className="mb-7 text-sm leading-[1.7] text-muted motion-safe:animate-enter motion-safe:[animation-delay:120ms]">
+            Have a film in mind, a question, or an opinion about movie snacks? We’re listening.
+          </p>
+          <form onSubmit={openEmailDraft} className="grid gap-5.5">
+            <label className={`${label} motion-safe:[animation-delay:180ms]`}>
+              Your name
+              <input
+                className={field}
+                name="name"
+                autoComplete="name"
+                placeholder="The name on the reservation"
+                required
+              />
+            </label>
+            <label className={`${label} motion-safe:[animation-delay:280ms]`}>
+              Email address
+              <input
+                className={field}
+                name="email"
+                type="email"
+                autoComplete="email"
+                placeholder="you@somewhere.com"
+                required
+              />
+            </label>
+            <label className={`${label} motion-safe:[animation-delay:380ms]`}>
+              What’s on your mind?
+              <textarea
+                className={`${field} resize-y`}
+                name="message"
+                rows={3}
+                placeholder="Tell us the scene…"
+                required
+              />
+            </label>
+            <button
+              className={`${solidButton} justify-self-start motion-safe:animate-enter motion-safe:[animation-delay:500ms]`}
+              type="submit"
+            >
+              Open email draft
+            </button>
+          </form>
+        </div>
       </div>
     </section>
   )

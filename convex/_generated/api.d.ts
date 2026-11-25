@@ -16,6 +16,7 @@ import type * as events from "../events.js";
 import type * as http from "../http.js";
 import type * as lib from "../lib.js";
 import type * as orders from "../orders.js";
+import type * as promotions from "../promotions.js";
 import type * as recipes from "../recipes.js";
 import type * as seed from "../seed.js";
 import type * as stripe from "../stripe.js";
@@ -37,6 +38,7 @@ declare const fullApi: ApiFromModules<{
   http: typeof http;
   lib: typeof lib;
   orders: typeof orders;
+  promotions: typeof promotions;
   recipes: typeof recipes;
   seed: typeof seed;
   stripe: typeof stripe;

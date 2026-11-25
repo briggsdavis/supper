@@ -39,6 +39,24 @@ export const router = createBrowserRouter([
           { path: "titles/:id", lazy: () => load(import("./routes/admin/title-form.tsx")) },
           { path: "recipes/new", lazy: () => load(import("./routes/admin/recipe-form.tsx")) },
           { path: "recipes/:id", lazy: () => load(import("./routes/admin/recipe-form.tsx")) },
+          {
+            path: "announcement-bars",
+            lazy: () => load(import("./routes/admin/announcement-bars.tsx")),
+          },
+          {
+            path: "announcement-bars/:id",
+            lazy: async () => ({
+              Component: (await import("./routes/admin/announcement-bars.tsx")).EditAnnouncement,
+            }),
+          },
+          { path: "popups", lazy: () => load(import("./routes/admin/popups.tsx")) },
+          {
+            path: "popups/:id",
+            lazy: async () => ({
+              Component: (await import("./routes/admin/popups.tsx")).EditPopup,
+            }),
+          },
+          { path: "emails", lazy: () => load(import("./routes/admin/emails.tsx")) },
         ],
       },
       { path: "*", lazy: () => load(import("./routes/missing.tsx")) },

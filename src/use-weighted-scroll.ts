@@ -53,7 +53,7 @@ export function useWeightedScroll() {
 
       if (
         target instanceof Element &&
-        target.closest("input, select, textarea, [contenteditable]")
+        target.closest("dialog[open], input, select, textarea, [contenteditable]")
       ) {
         stop()
         return

@@ -5,6 +5,8 @@ import ChromeCanvas from "./chrome-canvas.tsx"
 
 const createFooterDisc = (canvas: HTMLCanvasElement) =>
   createChromeCutlery(canvas, "flame", true, () => 1, 0, true, -0.95)
+const createContactDisc = (canvas: HTMLCanvasElement) =>
+  createChromeCutlery(canvas, "flame", true, () => 1, 0, true, -0.95, 0.12)
 
 export const section = "px-[max(7vw,1.875rem)] max-sm:px-6.25"
 export const sectionTitle = "leading-[1.01] tracking-[-0.075em]"
@@ -50,52 +52,20 @@ export function Reveal({ children, className = "" }: { children: ReactNode; clas
   )
 }
 
-export function Disc({
+export function ChromeDisc({
   followPointer = false,
   className = "",
 }: {
   followPointer?: boolean
   className?: string
 }) {
-  const ref = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    const disc = ref.current
-    if (!disc || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return
-
-    let frame = 0
-    const trackPointer = (event: PointerEvent) => {
-      if (event.pointerType === "touch") return
-      cancelAnimationFrame(frame)
-      frame = requestAnimationFrame(() => {
-        const { left, top, width, height } = disc.getBoundingClientRect()
-        const x = (event.clientX - left - width / 2) / window.innerWidth
-        const y = (event.clientY - top - height / 2) / window.innerHeight
-        disc.style.setProperty("--tilt-x", `${Math.max(-12, Math.min(12, -20 * y))}deg`)
-        disc.style.setProperty("--tilt-y", `${Math.max(-12, Math.min(12, 20 * x))}deg`)
-      })
-    }
-    const updateScroll = () => {
-      cancelAnimationFrame(frame)
-      frame = requestAnimationFrame(() => {
-        disc.style.setProperty("--disc-spin", `${(window.scrollY * 0.12) % 360}deg`)
-      })
-    }
-    if (followPointer) window.addEventListener("pointermove", trackPointer, { passive: true })
-    else {
-      window.addEventListener("scroll", updateScroll, { passive: true })
-      updateScroll()
-    }
-    return () => {
-      window.removeEventListener("pointermove", trackPointer)
-      window.removeEventListener("scroll", updateScroll)
-      cancelAnimationFrame(frame)
-    }
-  }, [followPointer])
-
   return (
-    <div ref={ref} className={`supper-disc ${className}`} aria-hidden="true">
-      <span />
+    <div className={`pointer-events-none aspect-square ${className}`} aria-hidden="true">
+      <ChromeCanvas
+        create={followPointer ? createContactDisc : createFooterDisc}
+        className="absolute inset-0"
+        viewportPointer={followPointer}
+      />
     </div>
   )
 }
@@ -128,12 +98,7 @@ export function SiteFooter() {
     <footer
       className={`${section} relative isolate grid min-h-[40.625rem] grid-rows-[1fr_auto] items-center overflow-hidden bg-[linear-gradient(180deg,transparent,#ffffff04_65%,#ffffff06)] pt-25 pb-7 text-paper max-sm:min-h-[36.875rem] max-sm:pt-20 max-sm:pb-5.5`}
     >
-      <div
-        className="pointer-events-none absolute top-1/2 -right-[4vw] -z-1 aspect-square w-[min(70vw,56rem)] -translate-y-1/2 max-sm:top-[12%] max-sm:-right-[24vw] max-sm:w-[90vw] max-sm:opacity-50"
-        aria-hidden="true"
-      >
-        <ChromeCanvas create={createFooterDisc} className="absolute inset-0" />
-      </div>
+      <ChromeDisc className="absolute top-1/2 -right-[4vw] -z-1 w-[min(70vw,56rem)] -translate-y-1/2 max-sm:top-[12%] max-sm:-right-[24vw] max-sm:w-[90vw] max-sm:opacity-50" />
       <Reveal className="relative">
         <h2 className={`${sectionTitle} mb-6.5 text-5xl md:text-6xl lg:text-7xl`}>
           Make tonight
