@@ -94,12 +94,14 @@ export default defineSchema({
     quantity: v.number(),
     amountCents: v.number(),
     status: vOrderStatus,
-    sessionId: v.optional(v.string()),
+    squareOrderId: v.optional(v.string()),
+    paymentLinkId: v.optional(v.string()),
+    paymentId: v.optional(v.string()),
     checkedIn: v.boolean(),
   })
     .index("by_userId", ["userId"])
     .index("by_eventId", ["eventId"])
-    .index("by_sessionId", ["sessionId"]),
+    .index("by_squareOrderId", ["squareOrderId"]),
 
   comments: defineTable({
     userId: v.id("users"),

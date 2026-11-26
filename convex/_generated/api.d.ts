@@ -19,7 +19,7 @@ import type * as orders from "../orders.js";
 import type * as promotions from "../promotions.js";
 import type * as recipes from "../recipes.js";
 import type * as seed from "../seed.js";
-import type * as stripe from "../stripe.js";
+import type * as square from "../square.js";
 import type * as titles from "../titles.js";
 import type * as users from "../users.js";
 
@@ -41,7 +41,7 @@ declare const fullApi: ApiFromModules<{
   promotions: typeof promotions;
   recipes: typeof recipes;
   seed: typeof seed;
-  stripe: typeof stripe;
+  square: typeof square;
   titles: typeof titles;
   users: typeof users;
 }>;

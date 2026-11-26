@@ -11,3 +11,11 @@ Convex agent skills for common tasks can be installed by running
 `npx convex ai-files install`.
 
 <!-- convex-ai-end -->
+
+## Deploys
+
+Pushing to git deploys the app (Convex backend and Cloudflare frontend). Don't run `convex deploy` or `wrangler deploy` by hand.
+
+## Payments
+
+Payments use Square hosted payment links (`convex/square.ts`, webhook at `/square` in `convex/http.ts`). Square env vars: `SQUARE_ACCESS_TOKEN`, `SQUARE_LOCATION_ID`, `SQUARE_WEBHOOK_SIGNATURE_KEY`. Set `SQUARE_ENV=sandbox` on dev only; production is the default.

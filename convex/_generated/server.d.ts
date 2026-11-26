@@ -35,8 +35,10 @@ type Env = {
   readonly SENDER_EMAIL: string | undefined;
   readonly SENDER_NAME: string | undefined;
   readonly SITE_URL: string | undefined;
-  readonly STRIPE_SECRET_KEY: string | undefined;
-  readonly STRIPE_WEBHOOK_SECRET: string | undefined;
+  readonly SQUARE_ACCESS_TOKEN: string | undefined;
+  readonly SQUARE_ENV: string | undefined;
+  readonly SQUARE_LOCATION_ID: string | undefined;
+  readonly SQUARE_WEBHOOK_SIGNATURE_KEY: string | undefined;
 };
 
 /**

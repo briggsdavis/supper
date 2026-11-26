@@ -87,7 +87,7 @@ export function DinnerFacts({ dinner }: { dinner: Dinner }) {
 export default function DinnerTickets({ dinner }: { dinner: Dinner }) {
   const location = useLocation()
   const { isAuthenticated, loading, me } = useMe()
-  const checkout = useAction(api.stripe.checkout)
+  const checkout = useAction(api.square.checkout)
   const seatsLeft = Math.max(0, dinner.capacity - dinner.sold)
   const limit = Math.min(MAX_SEATS, seatsLeft)
   const [qty, setQty] = useState(() => {

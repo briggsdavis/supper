@@ -11,8 +11,10 @@ const app = defineApp({
     SENDER_NAME: v.optional(v.string()),
     SITE_URL: v.optional(v.string()),
     ADMIN_EMAILS: v.optional(v.string()),
-    STRIPE_SECRET_KEY: v.optional(v.string()),
-    STRIPE_WEBHOOK_SECRET: v.optional(v.string()),
+    SQUARE_ACCESS_TOKEN: v.optional(v.string()),
+    SQUARE_LOCATION_ID: v.optional(v.string()),
+    SQUARE_WEBHOOK_SIGNATURE_KEY: v.optional(v.string()),
+    SQUARE_ENV: v.optional(v.string()),
   },
 })
 

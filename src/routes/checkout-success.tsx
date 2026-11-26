@@ -16,13 +16,13 @@ export default function CheckoutSuccess() {
 
 function Success() {
   const [params] = useSearchParams()
-  const sessionId = params.get("session_id") ?? ""
-  const confirm = useAction(api.stripe.confirm)
-  const order = useQuery(api.orders.bySession, { sessionId })
+  const ref = params.get("ref") ?? ""
+  const confirm = useAction(api.square.confirm)
+  const order = useQuery(api.orders.byRef, { ref })
 
   useEffect(() => {
-    if (sessionId) confirm({ sessionId }).catch(console.error)
-  }, [sessionId, confirm])
+    if (ref) confirm({ ref }).catch(console.error)
+  }, [ref, confirm])
 
   if (order === undefined) return <Loading />
   if (order === null) {
