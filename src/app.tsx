@@ -55,21 +55,11 @@ export default function App() {
             </NavLink>
           </nav>
           <div className="flex items-center gap-2 justify-self-end max-md:gap-1">
-            {!loading &&
-              (me?.isAdmin ? (
-                <div className={group}>
-                  <NavLink to="/admin" className={groupLink}>
-                    Admin
-                  </NavLink>
-                  <NavLink to="/account" className={groupLink}>
-                    Account
-                  </NavLink>
-                </div>
-              ) : (
-                <NavLink to={me ? "/account" : "/sign-in"} className={soloLink}>
-                  {me ? "Account" : "Sign in"}
-                </NavLink>
-              ))}
+            {!loading && (
+              <NavLink to={me ? "/account" : "/sign-in"} className={soloLink}>
+                {me ? "Account" : "Sign in"}
+              </NavLink>
+            )}
             <NavLink
               to="/contact"
               viewTransition

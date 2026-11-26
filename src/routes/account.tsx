@@ -8,6 +8,7 @@ import { RequireAuth, useMe } from "../components/auth.tsx"
 import {
   Alert,
   Button,
+  ButtonLink,
   Empty,
   Field,
   Heading,
@@ -67,9 +68,12 @@ function AccountPage() {
         </section>
         <section className="space-y-10">
           <Profile name={me.name} alerts={me.alerts} />
-          <Button variant="ghost" onClick={() => void signOut()}>
-            Sign out
-          </Button>
+          <div className="flex flex-wrap gap-3">
+            {me.isAdmin && <ButtonLink to="/admin">Admin</ButtonLink>}
+            <Button variant="ghost" onClick={() => void signOut()}>
+              Sign out
+            </Button>
+          </div>
         </section>
       </div>
     </Page>
