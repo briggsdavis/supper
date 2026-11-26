@@ -207,25 +207,19 @@
 ::view-transition {
   background: #0a0a0a;
 }
-::view-transition-new(root) {
-  animation: supper-route-in 0.62s ease both;
-}
+
+/* View transitions only carry the shared image morph. The page content has
+   already blurred out (route-motion.ts) and staggers back in live. */
 ::view-transition-old(root) {
-  animation: supper-route-in 0.26s ease reverse both;
+  display: none;
+}
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
 }
 
 :root:has([data-detail-transition]) .supper-header {
   view-transition-name: supper-navbar;
-}
-
-:root:has([data-detail-transition])::view-transition-old(root) {
-  animation: supper-route-in 240ms ease reverse both;
-  mix-blend-mode: normal;
-}
-
-:root:has([data-detail-transition])::view-transition-new(root) {
-  animation: supper-route-in 400ms ease 240ms both;
-  mix-blend-mode: normal;
 }
 
 ::view-transition-group(*.supper-detail-image) {
@@ -283,14 +277,11 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  :root:has([data-detail-transition])::view-transition-old(root),
-  :root:has([data-detail-transition])::view-transition-new(root),
   ::view-transition-group(*.supper-detail-image),
   ::view-transition-old(*.supper-detail-image),
   ::view-transition-new(*.supper-detail-image),
   ::view-transition-new(*.supper-detail-image):only-child,
   .supper-site :is(.supper-reveal, .supper-meal, .supper-meal-art),
-  ::view-transition-old(root),
   ::view-transition-new(root) {
     animation: none;
     transition: none;

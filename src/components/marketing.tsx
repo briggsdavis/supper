@@ -81,7 +81,6 @@ export function Brand({
     <Link
       className={`inline-flex w-max items-center gap-2.5 text-base font-bold tracking-[-0.055em] ${className}`}
       to="/"
-      viewTransition
     >
       <img
         src="/logo-96.png"
@@ -96,6 +95,7 @@ export function Brand({
 export function SiteFooter() {
   return (
     <footer
+      data-route-root
       className={`${section} relative isolate grid min-h-[40.625rem] grid-rows-[1fr_auto] items-center overflow-hidden bg-[linear-gradient(180deg,transparent,#ffffff04_65%,#ffffff06)] pt-25 pb-7 text-paper max-sm:min-h-[36.875rem] max-sm:pt-20 max-sm:pb-5.5`}
     >
       <ChromeDisc className="absolute top-1/2 -right-[4vw] -z-1 w-[min(70vw,56rem)] -translate-y-1/2 max-sm:top-[12%] max-sm:-right-[24vw] max-sm:w-[90vw] max-sm:opacity-50" />
@@ -104,7 +104,7 @@ export function SiteFooter() {
           Make tonight
           <br /> a <em>little</em> more cinematic.
         </h2>
-        <Link to="/contact" className={outlineButton} viewTransition>
+        <Link to="/contact" className={outlineButton}>
           Let’s plan a night
         </Link>
       </Reveal>

@@ -194,7 +194,7 @@ export default function HomeSections() {
           ))}
         </div>
         <div className="mt-8.5 flex justify-end max-sm:justify-start">
-          <Link to="/contact" className={outlineButton} viewTransition>
+          <Link to="/contact" className={outlineButton}>
             Make it a movie night
           </Link>
         </div>

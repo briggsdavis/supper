@@ -1,10 +1,12 @@
 import { useQuery_experimental } from "convex/react"
-import { useState } from "react"
+import { useLayoutEffect, useState } from "react"
 import { NavLink, Outlet, ScrollRestoration, useLocation, useMatch } from "react-router"
 import { api } from "../convex/_generated/api"
 import { useMe } from "./components/auth.tsx"
+import MetalMarkBackground from "./components/metal-mark-background.tsx"
 import { Brand, SiteFooter, solidButton } from "./components/marketing.tsx"
 import { AnnouncementBar, SitePopup } from "./components/site-promotions.tsx"
+import { hasMark, routeEntered } from "./route-motion.ts"
 import { useWeightedScroll } from "./use-weighted-scroll.ts"
 
 const pill =
@@ -20,7 +22,10 @@ export default function App() {
   const { me, loading } = useMe()
   const home = useMatch("/")
   const contact = useMatch("/contact")
-  const { pathname } = useLocation()
+  const { pathname, key } = useLocation()
+  // Runs after the scroll reset and before paint, so new blocks start hidden.
+  useLayoutEffect(() => routeEntered(pathname), [pathname, key])
+  const mark = hasMark(pathname)
   const publicPage = !!home || !!contact || /^\/(events|titles|recipes)(\/|$)/.test(pathname)
   const promotionQuery = useQuery_experimental({
     query: api.promotions.current,
@@ -44,7 +49,7 @@ export default function App() {
             className={`${group} max-md:col-span-full max-md:row-start-2 max-md:justify-self-center`}
             aria-label="Main navigation"
           >
-            <NavLink to="/" end viewTransition className={groupLink}>
+            <NavLink to="/" end className={groupLink}>
               Home
             </NavLink>
             <NavLink to="/events" className={groupLink}>
@@ -62,7 +67,6 @@ export default function App() {
             )}
             <NavLink
               to="/contact"
-              viewTransition
               className={`${solidButton} max-md:min-h-10 max-md:px-2`}
             >
               Contact
@@ -71,9 +75,11 @@ export default function App() {
         </header>
       </div>
       <main
-        className={`flex-1 ${home || contact ? "" : "pt-28 md:pt-20"}`}
+        data-route-root
+        className={`flex-1 ${home || contact ? "" : "pt-28 md:pt-20"} ${mark ? "isolate" : ""}`}
         style={promotions?.announcement ? { marginTop: barHeight } : undefined}
       >
+        {mark && <MetalMarkBackground />}
         <Outlet />
       </main>
       {publicPage && <SiteFooter />}

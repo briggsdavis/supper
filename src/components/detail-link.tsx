@@ -2,6 +2,7 @@ import { useConvex } from "convex/react"
 import { useEffect, useRef, type CSSProperties, type ReactNode } from "react"
 import { Link, useLocation, useViewTransitionState, type LinkProps } from "react-router"
 import { api } from "../../convex/_generated/api"
+import { setMorphSource } from "../route-motion.ts"
 
 type DetailSection = "titles" | "events" | "recipes"
 
@@ -47,6 +48,7 @@ export function DetailLink({
   slug,
   preview,
   children,
+  onClick,
   onFocus,
   onPointerEnter,
   ...props
@@ -68,6 +70,10 @@ export function DetailLink({
       state={{ ...preview, path }}
       viewTransition
       data-detail-transition={imageStyle ? true : undefined}
+      onClick={(event) => {
+        onClick?.(event)
+        setMorphSource(path, event.currentTarget)
+      }}
       onFocus={(event) => {
         onFocus?.(event)
         prewarm()

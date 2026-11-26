@@ -2,7 +2,6 @@ import { useQuery } from "convex/react"
 import { useSearchParams } from "react-router"
 import { api } from "../../convex/_generated/api"
 import { DetailLink } from "../components/detail-link.tsx"
-import MetalMarkBackground from "../components/metal-mark-background.tsx"
 import { Empty, Heading, Input, Loading, Page, Poster } from "../components/ui.tsx"
 
 export default function Titles() {
@@ -11,8 +10,7 @@ export default function Titles() {
   const titles = useQuery(api.titles.list, { search })
 
   return (
-    <Page wide className="isolate max-sm:px-4">
-      <MetalMarkBackground />
+    <Page wide className="max-sm:px-4">
       <Heading>Eat the movie</Heading>
       <p className="mt-4 max-w-xl text-neutral-400">
         Find a movie or show and cook what's on screen.

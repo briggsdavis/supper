@@ -210,7 +210,7 @@ void main() {
 }
 `
 
-export function createMetalMark(canvas: HTMLCanvasElement): ChromeScene | null {
+export function createMetalMark(canvas: HTMLCanvasElement, intro = false): ChromeScene | null {
   const gl = canvas.getContext("webgl2", { antialias: true, powerPreference: "low-power" })
   if (!gl) return null
 
@@ -239,6 +239,10 @@ export function createMetalMark(canvas: HTMLCanvasElement): ChromeScene | null {
   let previousScroll = window.scrollY
   let lastFrame = -Infinity
   let wasStill = false
+  // Entrance spin: starts fast and settles onto the idle rotation.
+  const introDuration = 1.1
+  const introTurns = 1.5
+  let introStart: number | null = intro && !reducedMotion.matches ? -1 : null
 
   return {
     resize(width, height) {
@@ -254,7 +258,17 @@ export function createMetalMark(canvas: HTMLCanvasElement): ChromeScene | null {
     render(time) {
       const still = reducedMotion.matches
       const elapsed = time - lastFrame
-      if (still === wasStill && (still ? Number.isFinite(lastFrame) : elapsed < 1 / 30)) return
+      if (introStart !== null && introStart < 0) introStart = time
+      const introProgress =
+        introStart === null || still ? 1 : Math.min(1, (time - introStart) / introDuration)
+      const spinning = introProgress < 1
+      if (!spinning) introStart = null
+      if (
+        !spinning &&
+        still === wasStill &&
+        (still ? Number.isFinite(lastFrame) : elapsed < 1 / 30)
+      )
+        return
       const scroll = window.scrollY
       // Ignore large gaps after a resize or returning to a hidden tab.
       if (!still && !wasStill && elapsed > 0 && elapsed < 0.15) {
@@ -269,7 +283,8 @@ export function createMetalMark(canvas: HTMLCanvasElement): ChromeScene | null {
       previousScroll = scroll
       lastFrame = time
       wasStill = still
-      const yaw = still ? restingAngle : angle
+      const spin = introTurns * 2 * Math.PI * (1 - introProgress) ** 4
+      const yaw = still ? restingAngle : angle - spin
       const pitch = 0.1 + (still ? 0 : Math.sin(angle) * 0.075)
       gl.uniform2f(pose, yaw, pitch)
       gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)

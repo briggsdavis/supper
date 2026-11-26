@@ -1,15 +1,13 @@
 import { useQuery } from "convex/react"
 import { api } from "../../convex/_generated/api"
 import EventCard from "../components/event-card.tsx"
-import MetalMarkBackground from "../components/metal-mark-background.tsx"
 import { Empty, Heading, Loading, Page } from "../components/ui.tsx"
 import { TODAY } from "../lib.ts"
 
 export default function Events() {
   const events = useQuery(api.events.upcoming, { after: TODAY })
   return (
-    <Page wide className="isolate">
-      <MetalMarkBackground />
+    <Page wide>
       <Heading>Dinners</Heading>
       <div className="mt-10">
         {events === undefined ? (

@@ -115,6 +115,7 @@ export function Poster({
         className,
       )}
       style={style}
+      data-poster
     >
       {url ? (
         <img src={url} alt={name} className="h-full w-full object-cover" />

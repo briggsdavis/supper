@@ -1,19 +1,24 @@
 import type { ComponentType } from "react"
-import { createBrowserRouter } from "react-router"
+import { createBrowserRouter, type RouteObject } from "react-router"
 import App from "./app.tsx"
 import ErrorPage from "./routes/error.tsx"
 import Home from "./routes/home.tsx"
+import { routeMotionLoader } from "./route-motion.ts"
 
 const load = async (module: Promise<{ default: ComponentType }>) => ({
   Component: (await module).default,
 })
+
+// Every public route waits for the current page to blur out before it commits.
+const withMotion = (routes: RouteObject[]): RouteObject[] =>
+  routes.map((route) => (route.path === "admin" ? route : { ...route, loader: routeMotionLoader }))
 
 export const router = createBrowserRouter([
   {
     path: "/",
     Component: App,
     ErrorBoundary: ErrorPage,
-    children: [
+    children: withMotion([
       { index: true, Component: Home },
       { path: "contact", lazy: () => load(import("./routes/contact.tsx")) },
       { path: "events", lazy: () => load(import("./routes/events.tsx")) },
@@ -60,6 +65,6 @@ export const router = createBrowserRouter([
         ],
       },
       { path: "*", lazy: () => load(import("./routes/missing.tsx")) },
-    ],
+    ]),
   },
 ])
