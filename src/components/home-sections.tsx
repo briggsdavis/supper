@@ -3,6 +3,7 @@ import type { FunctionReturnType } from "convex/server"
 import { useEffect, useRef, useState, type CSSProperties, type MouseEvent } from "react"
 import { Link } from "react-router"
 import { api } from "../../convex/_generated/api"
+import { smoothScrollTo } from "../smooth-scroll.ts"
 import { DetailLink, useImageTransition } from "./detail-link.tsx"
 import { mono, outlineButton, Reveal, section, sectionTitle } from "./marketing.tsx"
 
@@ -12,9 +13,7 @@ function scrollToPlaying(event: MouseEvent<HTMLAnchorElement>) {
   if (!playing) return
   event.preventDefault()
   playing.focus({ preventScroll: true })
-  playing.scrollIntoView({
-    behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth",
-  })
+  smoothScrollTo(playing)
 }
 
 function FilmGallery() {
@@ -321,66 +320,101 @@ function MealImage({ meal, shown }: { meal: Meal; shown: boolean }) {
   )
 }
 
-// Indexed list with one large image over its centre; the hovered row lights up, the rest mute.
+// Indexed list with one large image over its centre. The block pins while you scroll and steps
+// through the dishes; hovering a row also selects it. The active row lights up, the rest mute.
 function MealIndex({ meals }: { meals: Meal[] }) {
   const [active, setActive] = useState(0)
+  const track = useRef<HTMLDivElement>(null)
   const current = meals[active] ?? meals[0]
 
+  useEffect(() => {
+    const element = track.current
+    if (!element) return
+    let frame = 0
+    const update = () => {
+      frame = 0
+      const rect = element.getBoundingClientRect()
+      const travel = rect.height - window.innerHeight
+      if (travel <= 0) return
+      const progress = Math.min(0.9999, Math.max(0, -rect.top / travel))
+      setActive(Math.floor(progress * meals.length))
+    }
+    const request = () => {
+      if (!frame) frame = requestAnimationFrame(update)
+    }
+    update()
+    window.addEventListener("scroll", request, { passive: true })
+    window.addEventListener("resize", request)
+    return () => {
+      cancelAnimationFrame(frame)
+      window.removeEventListener("scroll", request)
+      window.removeEventListener("resize", request)
+    }
+  }, [meals.length])
+
   return (
-    <div className="relative grid min-h-[min(46rem,100svh)] items-center max-md:min-h-0 max-md:gap-8">
-      <div
-        aria-hidden="true"
-        className="pointer-events-none relative z-10 mx-auto w-[min(48vw,52rem)] max-md:w-full md:col-start-1 md:row-start-1"
-      >
-        <div className="relative aspect-video overflow-hidden rounded-media bg-[#1a1818]">
-          {meals.map((meal, index) => (
-            <MealImage key={meal._id} meal={meal} shown={index === active} />
-          ))}
-        </div>
-        <div className="pt-5 text-center [text-shadow:0_2px_1rem_#000]">
-          <p className="font-serif text-3xl leading-[1.05] text-paper md:text-5xl">
-            {current.name}
-          </p>
-          {(current.title || current.course) && (
-            <p className={`${mono} mt-3 text-muted uppercase`}>
-              {[current.title?.name, current.course].filter(Boolean).join(" / ")}
-            </p>
-          )}
+    <div ref={track} className="relative" style={{ height: `${100 + meals.length * 45}svh` }}>
+      <div className="sticky top-0 flex h-svh items-center">
+        <div className="relative grid w-full items-center max-md:gap-8">
+          <div
+            aria-hidden="true"
+            className="pointer-events-none relative z-10 mx-auto w-[min(48vw,52rem)] max-md:w-full md:col-start-1 md:row-start-1"
+          >
+            <div className="relative aspect-video overflow-hidden rounded-media bg-[#1a1818]">
+              {meals.map((meal, index) => (
+                <MealImage key={meal._id} meal={meal} shown={index === active} />
+              ))}
+            </div>
+            <div className="pt-5 text-center [text-shadow:0_2px_1rem_#000]">
+              <p className="font-serif text-3xl leading-[1.05] text-paper md:text-5xl">
+                {current.name}
+              </p>
+              {(current.title || current.course) && (
+                <p className={`${mono} mt-3 text-muted uppercase`}>
+                  {[current.title?.name, current.course].filter(Boolean).join(" / ")}
+                </p>
+              )}
+            </div>
+          </div>
+          <ol className="relative z-0 md:col-start-1 md:row-start-1">
+            {meals.map((meal, index) => {
+              const on = index === active
+              return (
+                <li key={meal._id}>
+                  <DetailLink
+                    section="recipes"
+                    slug={meal.slug}
+                    preview={{
+                      name: meal.name,
+                      imageUrl: meal.imageUrl,
+                      description: meal.summary,
+                    }}
+                    onPointerEnter={() => setActive(index)}
+                    onFocus={() => setActive(index)}
+                    className={`grid grid-cols-[1.25rem_3rem_minmax(0,1fr)_minmax(0,0.7fr)_6rem_3.5rem] items-center py-2.5 text-sm font-medium tracking-[0.02em] uppercase transition-colors duration-300 max-md:grid-cols-[1.25rem_2.5rem_minmax(0,1fr)_3rem] max-md:text-xs ${on ? "text-paper" : "text-paper/25 hover:text-paper/60"}`}
+                  >
+                    {() => (
+                      <>
+                        <span
+                          aria-hidden="true"
+                          className={`text-[0.6rem] transition-opacity ${on ? "opacity-100" : "opacity-0"}`}
+                        >
+                          ▶
+                        </span>
+                        <span className="tabular-nums">{String(index + 1).padStart(2, "0")}</span>
+                        <span className="truncate pr-6">{meal.name}</span>
+                        <span className="truncate pr-6 max-md:hidden">{meal.title?.name}</span>
+                        <span className="max-md:hidden">{meal.course}</span>
+                        <span className="text-right tabular-nums">{meal.title?.year}</span>
+                      </>
+                    )}
+                  </DetailLink>
+                </li>
+              )
+            })}
+          </ol>
         </div>
       </div>
-      <ol className="relative z-0 md:col-start-1 md:row-start-1">
-        {meals.map((meal, index) => {
-          const on = index === active
-          return (
-            <li key={meal._id}>
-              <DetailLink
-                section="recipes"
-                slug={meal.slug}
-                preview={{ name: meal.name, imageUrl: meal.imageUrl, description: meal.summary }}
-                onPointerEnter={() => setActive(index)}
-                onFocus={() => setActive(index)}
-                className={`grid grid-cols-[1.25rem_3rem_minmax(0,1fr)_minmax(0,0.7fr)_6rem_3.5rem] items-center py-2.5 text-sm font-medium tracking-[0.02em] uppercase transition-colors duration-300 max-md:grid-cols-[1.25rem_2.5rem_minmax(0,1fr)_3rem] max-md:text-xs ${on ? "text-paper" : "text-paper/25 hover:text-paper/60"}`}
-              >
-                {() => (
-                  <>
-                    <span
-                      aria-hidden="true"
-                      className={`text-[0.6rem] transition-opacity ${on ? "opacity-100" : "opacity-0"}`}
-                    >
-                      ▶
-                    </span>
-                    <span className="tabular-nums">{String(index + 1).padStart(2, "0")}</span>
-                    <span className="truncate pr-6">{meal.name}</span>
-                    <span className="truncate pr-6 max-md:hidden">{meal.title?.name}</span>
-                    <span className="max-md:hidden">{meal.course}</span>
-                    <span className="text-right tabular-nums">{meal.title?.year}</span>
-                  </>
-                )}
-              </DetailLink>
-            </li>
-          )
-        })}
-      </ol>
     </div>
   )
 }

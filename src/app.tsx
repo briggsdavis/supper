@@ -7,7 +7,7 @@ import { Brand, SiteFooter } from "./components/marketing.tsx"
 import MetalMarkBackground from "./components/metal-mark-background.tsx"
 import { AnnouncementBar, SitePopup } from "./components/site-promotions.tsx"
 import { hasMark, routeEntered } from "./route-motion.ts"
-import { useWeightedScroll } from "./use-weighted-scroll.ts"
+import { useSmoothScroll } from "./smooth-scroll.ts"
 
 const navLink =
   "group inline-flex py-2 text-sm font-medium text-paper/60 transition-colors duration-300 hover:text-paper aria-[current=page]:text-paper max-md:text-xs"
@@ -38,7 +38,7 @@ function NavItem({ to, end, children }: { to: string; end?: boolean; children: s
 }
 
 export default function App() {
-  useWeightedScroll()
+  useSmoothScroll()
   const { me, loading } = useMe()
   const home = useMatch("/")
   const contact = useMatch("/contact")
@@ -68,8 +68,8 @@ export default function App() {
         <header className="grid min-h-[5.375rem] grid-cols-[1fr_auto_1fr] items-center gap-3 px-[max(6.1vw,1.25rem)] font-sans text-paper [text-shadow:0_1px_0.75rem_#0009] *:pointer-events-auto max-md:grid-cols-[1fr_auto] max-md:gap-1.25 max-md:px-3 max-md:pt-2">
           <Brand
             showWordmark={false}
-            className="group h-12 max-md:h-10"
-            discClassName="h-[1.58rem] transition-transform duration-500 ease-site group-hover:scale-110 group-focus-visible:scale-110 motion-reduce:transition-none max-md:h-[1.15rem]"
+            className="h-12 max-md:h-10"
+            discClassName="h-[1.58rem] max-md:h-[1.15rem]"
           />
           <nav
             className="flex items-center gap-8 max-md:col-span-full max-md:row-start-2 max-md:gap-6 max-md:justify-self-center"
