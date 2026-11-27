@@ -1,5 +1,5 @@
 import { useQuery_experimental } from "convex/react"
-import { useLayoutEffect, useState } from "react"
+import { type RefObject, useLayoutEffect, useRef, useState } from "react"
 import { NavLink, Outlet, ScrollRestoration, useLocation, useMatch } from "react-router"
 import { api } from "../convex/_generated/api"
 import { useMe } from "./components/auth.tsx"
@@ -33,9 +33,14 @@ export default function App() {
   })
   const promotions = promotionQuery.status === "success" ? promotionQuery.data : undefined
   const [barHeight, setBarHeight] = useState(0)
+  const siteRef = useRef<HTMLDivElement>(null)
+  useHomeIntro(siteRef)
 
   return (
-    <div className="supper-site flex min-h-screen flex-col text-neutral-300 selection:bg-paper selection:text-neutral-950">
+    <div
+      ref={siteRef}
+      className="supper-site flex min-h-screen flex-col text-neutral-300 selection:bg-paper selection:text-neutral-950"
+    >
       <div className="supper-header pointer-events-none fixed inset-x-0 top-0 z-40">
         {promotions?.announcement && (
           <AnnouncementBar bar={promotions.announcement} onHeightChange={setBarHeight} />
@@ -85,4 +90,51 @@ export default function App() {
       <ScrollRestoration />
     </div>
   )
+}
+
+const introEase = "cubic-bezier(0.65, 0, 0.35, 1)"
+
+// White screen → hero miniature wipes open from the centre → 1s hold → expands to fill the viewport.
+// index.html adds `supper-intro` before first paint (home, once per session, motion allowed).
+function useHomeIntro(siteRef: RefObject<HTMLDivElement | null>) {
+  useLayoutEffect(() => {
+    const root = document.documentElement
+    const site = siteRef.current
+    if (!site || !root.classList.contains("supper-intro")) return
+
+    window.scrollTo(0, 0)
+    const wipe = site.animate(
+      [
+        { clipPath: "inset(0 50% calc(100% - 100vh) 50%)" },
+        { clipPath: "inset(0 0% calc(100% - 100vh) 0%)" },
+      ],
+      { duration: 800, delay: 300, easing: introEase, fill: "forwards" },
+    )
+    let expand: Animation | undefined
+
+    wipe.finished
+      .then(() => {
+        expand = site.animate([{ transform: "scale(0.45)" }, { transform: "scale(1)" }], {
+          duration: 1000,
+          delay: 1000,
+          easing: introEase,
+          fill: "forwards",
+        })
+        return expand.finished
+      })
+      .then(() => {
+        try {
+          sessionStorage.setItem("supper-intro", "1")
+        } catch {}
+        root.classList.remove("supper-intro")
+        wipe.cancel()
+        expand?.cancel()
+      })
+      .catch(() => {})
+
+    return () => {
+      wipe.cancel()
+      expand?.cancel()
+    }
+  }, [siteRef])
 }
