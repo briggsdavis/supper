@@ -53,7 +53,7 @@ export default function Home() {
             <img
               src="/wordmark.png"
               alt=""
-              className="h-auto w-full max-w-[56rem]"
+              className="h-auto w-full max-w-[33.6rem]"
             />
           </h1>
           <p className="mt-10 max-w-md text-lg text-neutral-300">
