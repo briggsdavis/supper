@@ -1,8 +1,9 @@
 import { useQuery } from "convex/react"
-import { useEffect, useRef, useState, type MouseEvent } from "react"
+import type { FunctionReturnType } from "convex/server"
+import { useEffect, useRef, useState, type CSSProperties, type MouseEvent } from "react"
 import { Link } from "react-router"
 import { api } from "../../convex/_generated/api"
-import { DetailLink } from "./detail-link.tsx"
+import { DetailLink, useImageTransition } from "./detail-link.tsx"
 import { mono, outlineButton, Reveal, section, sectionTitle } from "./marketing.tsx"
 
 function scrollToPlaying(event: MouseEvent<HTMLAnchorElement>) {
@@ -59,7 +60,7 @@ function FilmGallery() {
             }}
             onFocus={() => activate(index)}
             onBlur={deactivate}
-            className="block"
+            className="group block"
           >
             {(posterStyle) => (
               <>
@@ -69,7 +70,7 @@ function FilmGallery() {
                       src={film.posterUrl}
                       alt=""
                       style={posterStyle}
-                      className="absolute inset-0 h-full w-full rounded-media object-cover"
+                      className="absolute inset-0 h-full w-full rounded-media object-cover transition-transform duration-900 ease-site group-hover:scale-[1.07] group-focus-visible:scale-[1.07] motion-reduce:transition-none"
                     />
                   )}
                   {film.year && (
@@ -92,6 +93,102 @@ function FilmGallery() {
         </Reveal>
       ))}
     </div>
+  )
+}
+
+// Scattered layout: left / top as % of the field, width in vw, speed = parallax strength.
+const scatterSlots = [
+  { left: 8, top: 2, width: 22, ratio: "3/2", speed: 0.12 },
+  { left: 42, top: 6, width: 20, ratio: "4/5", speed: -0.06 },
+  { left: 74, top: 0, width: 22, ratio: "3/4", speed: 0.18 },
+  { left: 3, top: 27, width: 13, ratio: "16/9", speed: -0.1 },
+  { left: 19, top: 40, width: 15, ratio: "3/2", speed: 0.08 },
+  { left: 58, top: 36, width: 16, ratio: "1/1", speed: 0.22 },
+  { left: 82, top: 44, width: 14, ratio: "2/3", speed: -0.04 },
+  { left: 2, top: 66, width: 22, ratio: "16/10", speed: 0.16 },
+  { left: 36, top: 62, width: 24, ratio: "3/2", speed: -0.08 },
+  { left: 68, top: 74, width: 25, ratio: "16/10", speed: 0.1 },
+  { left: 28, top: 88, width: 14, ratio: "4/5", speed: 0.2 },
+]
+
+// About a viewport of scattered film images. Each one grows from 80% to 100% as it reaches
+// the middle of the screen, then eases to 90% on the way out, with its own parallax drift.
+export function MovieScatter() {
+  const titles = useQuery(api.titles.list, { search: "" })
+  const field = useRef<HTMLDivElement>(null)
+  const posters = (titles ?? []).flatMap((t) => (t.posterUrl ? [t.posterUrl] : []))
+
+  useEffect(() => {
+    const root = field.current
+    if (!root || posters.length === 0) return
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return
+    const items = [...root.querySelectorAll<HTMLElement>("[data-scatter]")]
+    let frame = 0
+
+    const update = () => {
+      frame = 0
+      const vh = window.innerHeight
+      for (const item of items) {
+        const rect = item.getBoundingClientRect()
+        // -1 entering from the bottom, 0 centred, 1 leaving at the top
+        const p = Math.max(
+          -1,
+          Math.min(1, (vh / 2 - (rect.top + rect.height / 2)) / (vh / 2 + rect.height / 2)),
+        )
+        const scale = p < 0 ? 1 + 0.2 * p : 1 - 0.1 * p
+        const shift = p * Number(item.dataset.speed) * vh
+        const inner = item.firstElementChild as HTMLElement
+        inner.style.transform = `translate3d(0, ${(-shift).toFixed(1)}px, 0) scale(${scale.toFixed(4)})`
+      }
+    }
+    const request = () => {
+      if (!frame) frame = requestAnimationFrame(update)
+    }
+
+    update()
+    window.addEventListener("scroll", request, { passive: true })
+    window.addEventListener("resize", request)
+    return () => {
+      cancelAnimationFrame(frame)
+      window.removeEventListener("scroll", request)
+      window.removeEventListener("resize", request)
+    }
+  }, [posters.length])
+
+  if (posters.length === 0) return null
+
+  return (
+    <section aria-hidden="true" className="relative overflow-hidden py-[12svh]">
+      <div ref={field} className="relative mx-auto h-[150svh] max-md:h-[130svh]">
+        {scatterSlots.map((slot, index) => (
+          <div
+            key={index}
+            data-scatter
+            data-speed={slot.speed}
+            className="absolute max-md:w-[calc(var(--w)*1.7)]!"
+            style={
+              {
+                left: `${slot.left}%`,
+                top: `${slot.top}%`,
+                width: `${slot.width}vw`,
+                "--w": `${slot.width}vw`,
+                maxWidth: `${100 - slot.left}%`,
+              } as CSSProperties
+            }
+          >
+            <div className="origin-center will-change-transform">
+              <img
+                src={posters[index % posters.length]}
+                alt=""
+                loading="lazy"
+                className="block w-full rounded-media object-cover"
+                style={{ aspectRatio: slot.ratio }}
+              />
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
   )
 }
 
@@ -123,6 +220,85 @@ export function HomeIntro() {
         </a>
       </Reveal>
     </section>
+  )
+}
+
+type Meal = FunctionReturnType<typeof api.recipes.featured>[number]
+
+function MealImage({ meal, shown }: { meal: Meal; shown: boolean }) {
+  const style = useImageTransition(`/recipes/${meal.slug}`)
+  if (!meal.imageUrl) return null
+  return (
+    <img
+      src={meal.imageUrl}
+      alt=""
+      style={style}
+      className={`absolute inset-0 h-full w-full object-cover transition-[opacity,scale] duration-700 ease-site ${shown ? "scale-100 opacity-100" : "scale-[1.04] opacity-0"}`}
+    />
+  )
+}
+
+// Indexed list with one large image over its centre; the hovered row lights up, the rest mute.
+function MealIndex({ meals }: { meals: Meal[] }) {
+  const [active, setActive] = useState(0)
+  const current = meals[active] ?? meals[0]
+
+  return (
+    <div className="relative grid min-h-[min(46rem,100svh)] items-center max-md:min-h-0 max-md:gap-8">
+      <div
+        aria-hidden="true"
+        className="pointer-events-none relative z-10 mx-auto w-[min(48vw,52rem)] max-md:w-full md:col-start-1 md:row-start-1"
+      >
+        <div className="relative aspect-video overflow-hidden rounded-media bg-[#1a1818]">
+          {meals.map((meal, index) => (
+            <MealImage key={meal._id} meal={meal} shown={index === active} />
+          ))}
+        </div>
+        <div className="pt-5 text-center [text-shadow:0_2px_1rem_#000]">
+          <p className="font-serif text-3xl leading-[1.05] text-paper md:text-5xl">
+            {current.name}
+          </p>
+          {(current.title || current.course) && (
+            <p className={`${mono} mt-3 text-muted uppercase`}>
+              {[current.title?.name, current.course].filter(Boolean).join(" / ")}
+            </p>
+          )}
+        </div>
+      </div>
+      <ol className="relative z-0 md:col-start-1 md:row-start-1">
+        {meals.map((meal, index) => {
+          const on = index === active
+          return (
+            <li key={meal._id}>
+              <DetailLink
+                section="recipes"
+                slug={meal.slug}
+                preview={{ name: meal.name, imageUrl: meal.imageUrl, description: meal.summary }}
+                onPointerEnter={() => setActive(index)}
+                onFocus={() => setActive(index)}
+                className={`grid grid-cols-[1.25rem_3rem_minmax(0,1fr)_minmax(0,0.7fr)_6rem_3.5rem] items-center py-2.5 text-sm font-medium tracking-[0.02em] uppercase transition-colors duration-300 max-md:grid-cols-[1.25rem_2.5rem_minmax(0,1fr)_3rem] max-md:text-xs ${on ? "text-paper" : "text-paper/25 hover:text-paper/60"}`}
+              >
+                {() => (
+                  <>
+                    <span
+                      aria-hidden="true"
+                      className={`text-[0.6rem] transition-opacity ${on ? "opacity-100" : "opacity-0"}`}
+                    >
+                      ▶
+                    </span>
+                    <span className="tabular-nums">{String(index + 1).padStart(2, "0")}</span>
+                    <span className="truncate pr-6">{meal.name}</span>
+                    <span className="truncate pr-6 max-md:hidden">{meal.title?.name}</span>
+                    <span className="max-md:hidden">{meal.course}</span>
+                    <span className="text-right tabular-nums">{meal.title?.year}</span>
+                  </>
+                )}
+              </DetailLink>
+            </li>
+          )
+        })}
+      </ol>
+    </div>
   )
 }
 
@@ -161,49 +337,7 @@ export default function HomeSections() {
             Scenes you can <em>taste.</em>
           </h2>
         </Reveal>
-        <div className="border-t border-line">
-          {meals?.map((meal) => (
-            <DetailLink
-              key={meal._id}
-              className="supper-meal"
-              section="recipes"
-              slug={meal.slug}
-              preview={{ name: meal.name, imageUrl: meal.imageUrl, description: meal.summary }}
-            >
-              {(imageStyle) => (
-                <>
-                  <div className="supper-meal-art rounded-media" aria-hidden="true">
-                    {meal.imageUrl && (
-                      <img
-                        src={meal.imageUrl}
-                        alt=""
-                        style={imageStyle}
-                        className="absolute inset-0 h-full w-full rounded-media object-cover"
-                      />
-                    )}
-                    {meal.course && (
-                      <span className="absolute bottom-3 left-3.5 rounded-full bg-paper px-2.25 py-1 font-mono text-xs tracking-[0.07em] text-[#262323]">
-                        {meal.course}
-                      </span>
-                    )}
-                  </div>
-                  <Reveal className="supper-meal-copy">
-                    <h3 className="mb-2 text-xl leading-[1.15] tracking-[-0.04em] md:text-2xl lg:text-3xl">
-                      {meal.name}
-                    </h3>
-                    <p className="mb-3 text-xs text-muted">{meal.summary}</p>
-                    {meal.title && (
-                      <span className={`${mono} text-muted`}>
-                        {meal.title.name}
-                        {meal.title.year ? ` · ${meal.title.year}` : ""}
-                      </span>
-                    )}
-                  </Reveal>
-                </>
-              )}
-            </DetailLink>
-          ))}
-        </div>
+        {meals && meals.length > 0 && <MealIndex meals={meals} />}
         <div className="mt-8.5 flex justify-end max-sm:justify-start">
           <Link to="/contact" className={outlineButton}>
             Make it a movie night

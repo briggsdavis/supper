@@ -21,7 +21,7 @@ const queries = {
 export const detailColumns =
   "grid items-start gap-8 md:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)] lg:grid-cols-[minmax(0,30rem)_minmax(0,1fr)] lg:gap-12"
 
-function useImageTransition(path: string): CSSProperties | undefined {
+export function useImageTransition(path: string): CSSProperties | undefined {
   const active = useViewTransitionState(path)
   if (!active) return undefined
   return {

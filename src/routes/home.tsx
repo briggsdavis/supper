@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react"
 import { useMe } from "../components/auth.tsx"
 import ChromeCanvas from "../components/chrome-canvas.tsx"
-import HomeSections, { HomeIntro } from "../components/home-sections.tsx"
+import HomeSections, { HomeIntro, MovieScatter } from "../components/home-sections.tsx"
 import { ButtonLink, Page } from "../components/ui.tsx"
 import { createChromeCutlery } from "../effects/chrome-cutlery.ts"
 
@@ -50,11 +50,7 @@ export default function Home() {
         <div className="relative z-10 flex min-h-svh flex-col justify-end px-[max(6.1vw,1.25rem)] pt-24 pb-28 max-md:px-3">
           <h1 id="hero-title">
             <span className="sr-only">Scenes &amp; Supper</span>
-            <img
-              src="/wordmark.png"
-              alt=""
-              className="h-auto w-full max-w-[33.6rem]"
-            />
+            <img src="/wordmark.png" alt="" className="h-auto w-full max-w-[33.6rem]" />
           </h1>
           <p className="mt-10 max-w-md text-lg text-neutral-300">
             We screen a film and cook the food on screen. Every course lands with its scene.
@@ -68,6 +64,8 @@ export default function Home() {
         </div>
         <HomeIntro />
       </section>
+
+      <MovieScatter />
 
       <HomeSections />
       <HomeListings />

@@ -1,21 +1,41 @@
 import { useQuery_experimental } from "convex/react"
-import { type RefObject, useLayoutEffect, useRef, useState } from "react"
+import { type ReactNode, type RefObject, useLayoutEffect, useRef, useState } from "react"
 import { NavLink, Outlet, ScrollRestoration, useLocation, useMatch } from "react-router"
 import { api } from "../convex/_generated/api"
 import { useMe } from "./components/auth.tsx"
-import { Brand, SiteFooter, solidButton } from "./components/marketing.tsx"
+import { Brand, SiteFooter } from "./components/marketing.tsx"
 import MetalMarkBackground from "./components/metal-mark-background.tsx"
 import { AnnouncementBar, SitePopup } from "./components/site-promotions.tsx"
 import { hasMark, routeEntered } from "./route-motion.ts"
 import { useWeightedScroll } from "./use-weighted-scroll.ts"
 
-const pill =
-  "h-12 rounded-full border border-line bg-nav shadow-[0_0.4375rem_1.375rem_#0005] backdrop-blur-[0.875rem] max-md:h-10"
-const group = `${pill} flex items-center gap-1 p-1.25`
-const link =
-  "inline-flex items-center rounded-full border text-xs font-semibold whitespace-nowrap transition-colors duration-250 hover:bg-paper hover:text-[#151515] aria-[current=page]:bg-paper aria-[current=page]:text-[#151515]"
-const groupLink = `${link} h-full border-transparent px-3.25 text-muted hover:border-line aria-[current=page]:border-line max-md:px-2`
-const soloLink = `${pill} ${link} px-4.75 text-paper max-md:px-2`
+const navLink =
+  "group inline-flex py-2 text-sm font-medium text-paper/60 transition-colors duration-300 hover:text-paper aria-[current=page]:text-paper max-md:text-xs"
+
+// Hover: the label slides up out of view while an identical copy rolls up from below.
+function RollText({ children }: { children: ReactNode }) {
+  return (
+    <span className="relative inline-flex overflow-hidden">
+      <span className="block transition-transform duration-500 ease-site group-hover:-translate-y-full group-focus-visible:-translate-y-full motion-reduce:transition-none">
+        {children}
+      </span>
+      <span
+        aria-hidden="true"
+        className="absolute inset-0 block translate-y-full transition-transform duration-500 ease-site group-hover:translate-y-0 group-focus-visible:translate-y-0 motion-reduce:transition-none"
+      >
+        {children}
+      </span>
+    </span>
+  )
+}
+
+function NavItem({ to, end, children }: { to: string; end?: boolean; children: string }) {
+  return (
+    <NavLink to={to} end={end} className={navLink}>
+      <RollText>{children}</RollText>
+    </NavLink>
+  )
+}
 
 export default function App() {
   useWeightedScroll()
@@ -45,35 +65,27 @@ export default function App() {
         {promotions?.announcement && (
           <AnnouncementBar bar={promotions.announcement} onHeightChange={setBarHeight} />
         )}
-        <header className="grid min-h-[5.375rem] grid-cols-[1fr_auto_1fr] items-center gap-3 px-[max(6.1vw,1.25rem)] font-sans text-paper *:pointer-events-auto max-md:grid-cols-[1fr_auto] max-md:gap-1.25 max-md:px-3 max-md:pt-2">
+        <header className="grid min-h-[5.375rem] grid-cols-[1fr_auto_1fr] items-center gap-3 px-[max(6.1vw,1.25rem)] font-sans text-paper [text-shadow:0_1px_0.75rem_#0009] *:pointer-events-auto max-md:grid-cols-[1fr_auto] max-md:gap-1.25 max-md:px-3 max-md:pt-2">
           <Brand
             showWordmark={false}
             className="h-12 max-md:h-10"
             discClassName="h-[1.58rem] max-md:h-[1.15rem]"
           />
           <nav
-            className={`${group} max-md:col-span-full max-md:row-start-2 max-md:justify-self-center`}
+            className="flex items-center gap-8 max-md:col-span-full max-md:row-start-2 max-md:gap-6 max-md:justify-self-center"
             aria-label="Main navigation"
           >
-            <NavLink to="/" end className={groupLink}>
+            <NavItem to="/" end>
               Home
-            </NavLink>
-            <NavLink to="/dinners" className={groupLink}>
-              Dinners
-            </NavLink>
-            <NavLink to="/movies" className={groupLink}>
-              Movies
-            </NavLink>
+            </NavItem>
+            <NavItem to="/dinners">Dinners</NavItem>
+            <NavItem to="/movies">Movies</NavItem>
           </nav>
-          <div className="flex items-center gap-2 justify-self-end max-md:gap-1">
+          <div className="flex items-center gap-8 justify-self-end max-md:gap-5">
             {!loading && (
-              <NavLink to={me ? "/account" : "/sign-in"} className={soloLink}>
-                {me ? "Account" : "Sign in"}
-              </NavLink>
+              <NavItem to={me ? "/account" : "/sign-in"}>{me ? "Account" : "Sign in"}</NavItem>
             )}
-            <NavLink to="/contact" className={`${solidButton} max-md:min-h-10 max-md:px-2`}>
-              Contact
-            </NavLink>
+            <NavItem to="/contact">Contact</NavItem>
           </div>
         </header>
       </div>
