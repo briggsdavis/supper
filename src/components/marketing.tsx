@@ -75,11 +75,13 @@ export function Brand({
   discClassName = "",
   wordmarkClassName = "",
   showMark = true,
+  showWordmark = true,
 }: {
   className?: string
   discClassName?: string
   wordmarkClassName?: string
   showMark?: boolean
+  showWordmark?: boolean
 }) {
   return (
     <Link
@@ -90,9 +92,9 @@ export function Brand({
       {showMark && (
         <img src="/mark.png" alt="" className={`h-[1.375rem] w-auto flex-none ${discClassName}`} />
       )}
-      <span className="flex">
+      {showWordmark && (
         <img src="/wordmark.png" alt="" className={`h-[0.9375rem] w-auto ${wordmarkClassName}`} />
-      </span>
+      )}
     </Link>
   )
 }

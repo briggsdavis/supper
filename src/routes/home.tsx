@@ -47,14 +47,14 @@ export default function Home() {
             </div>
           </div>
         </div>
-        <div className="relative z-10 mx-auto flex min-h-svh max-w-6xl flex-col justify-end px-6 pt-24 pb-28">
-          <h1
-            id="hero-title"
-            className="font-display text-7xl leading-[0.9] font-medium tracking-[-0.075em] text-paper sm:text-8xl md:text-9xl"
-          >
-            Scenes
-            <br />
-            <em>&amp;</em> Supper
+        <div className="relative z-10 flex min-h-svh flex-col justify-end px-[max(6.1vw,1.25rem)] pt-24 pb-28 max-md:px-3">
+          <h1 id="hero-title">
+            <span className="sr-only">Scenes &amp; Supper</span>
+            <img
+              src="/wordmark.png"
+              alt=""
+              className="h-auto w-full max-w-[56rem]"
+            />
           </h1>
           <p className="mt-10 max-w-md text-lg text-neutral-300">
             We screen a film and cook the food on screen. Every course lands with its scene.
