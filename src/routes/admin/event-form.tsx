@@ -1,3 +1,4 @@
+import { Plus, X } from "@phosphor-icons/react"
 import { useMutation, useQuery } from "convex/react"
 import { useState } from "react"
 import { Link, useNavigate, useParams } from "react-router"
@@ -21,7 +22,7 @@ export default function AdminEventForm() {
     return (
       <p className="text-neutral-400">
         Add a{" "}
-        <Link to="/admin/titles/new" className="text-paper underline">
+        <Link to="/admin/movies/new" className="text-paper underline">
           title
         </Link>{" "}
         first.
@@ -38,7 +39,6 @@ function Form({ event, titles }: { event: Doc<"events"> | null; titles: Doc<"tit
   const [f, setF] = useState({
     titleId: event?.titleId ?? titles[0]._id,
     startsAt: event ? toZonedInput(event.startsAt) : "",
-    venue: event?.venue ?? "",
     address: event?.address ?? "",
     price: event ? String(event.priceCents / 100) : "",
     capacity: event ? String(event.capacity) : "",
@@ -64,7 +64,6 @@ function Form({ event, titles }: { event: Doc<"events"> | null; titles: Doc<"tit
             id: event?._id,
             titleId: f.titleId,
             startsAt: fromZonedInput(f.startsAt),
-            venue: f.venue,
             address: f.address,
             priceCents: Math.round(Number(f.price) * 100),
             capacity: Number(f.capacity),
@@ -72,7 +71,7 @@ function Form({ event, titles }: { event: Doc<"events"> | null; titles: Doc<"tit
             menu: f.menu,
             published: f.published,
           })
-          navigate("/admin")
+          navigate("/admin/dinners")
         } catch (err) {
           setError(errorText(err))
           setBusy(false)
@@ -101,9 +100,6 @@ function Form({ event, titles }: { event: Doc<"events"> | null; titles: Doc<"tit
         />
       </Field>
       <div className="grid gap-6 sm:grid-cols-2">
-        <Field label="Venue">
-          <Input value={f.venue} onChange={(e) => set({ venue: e.target.value })} required />
-        </Field>
         <Field label="Address">
           <Input value={f.address} onChange={(e) => set({ address: e.target.value })} required />
         </Field>
@@ -152,7 +148,7 @@ function Form({ event, titles }: { event: Doc<"events"> | null; titles: Doc<"tit
               onClick={() => set({ menu: f.menu.filter((_, n) => n !== i) })}
               aria-label="Remove course"
             >
-              ×
+              <X size={16} aria-hidden="true" />
             </button>
           </div>
         ))}
@@ -161,6 +157,7 @@ function Form({ event, titles }: { event: Doc<"events"> | null; titles: Doc<"tit
           variant="ghost"
           onClick={() => set({ menu: [...f.menu, { course: "", dish: "" }] })}
         >
+          <Plus size={16} aria-hidden="true" />
           Add course
         </Button>
       </div>
@@ -184,7 +181,7 @@ function Form({ event, titles }: { event: Doc<"events"> | null; titles: Doc<"tit
               if (!confirm("Delete this dinner?")) return
               try {
                 await remove({ id: event._id })
-                navigate("/admin")
+                navigate("/admin/dinners")
               } catch (err) {
                 setError(errorText(err))
               }

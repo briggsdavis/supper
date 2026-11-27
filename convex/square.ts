@@ -83,7 +83,9 @@ export const confirm = action({
   args: { ref: v.string() },
   returns: v.null(),
   handler: async (ctx, args): Promise<null> => {
-    const squareOrderId: string | null = await ctx.runQuery(internal.orders.squareOrderIdFor, { ref: args.ref })
+    const squareOrderId: string | null = await ctx.runQuery(internal.orders.squareOrderIdFor, {
+      ref: args.ref,
+    })
     if (squareOrderId === null) return null
     const { order } = await square<{ order: SquareOrder }>("GET", `orders/${squareOrderId}`)
     for (const tender of order.tenders ?? []) {

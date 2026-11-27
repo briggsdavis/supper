@@ -253,7 +253,7 @@ function PopupForm({ popup }: { popup: Popup | null }) {
               required
               value={button.link}
               onChange={(event) => setButton({ ...button, link: event.target.value })}
-              placeholder="/events or https://example.com"
+              placeholder="/dinners or https://example.com"
             />
           </Field>
           <ColorField

@@ -60,9 +60,9 @@ export default function Home() {
             We screen a film and cook the food on screen. Every course lands with its scene.
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
-            <ButtonLink to="/events">See upcoming dinners</ButtonLink>
-            <ButtonLink to="/titles" variant="ghost">
-              Browse recipes
+            <ButtonLink to="/dinners">See upcoming dinners</ButtonLink>
+            <ButtonLink to="/movies" variant="ghost">
+              Browse movies
             </ButtonLink>
           </div>
         </div>

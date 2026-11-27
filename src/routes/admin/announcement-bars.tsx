@@ -96,7 +96,7 @@ function AnnouncementForm({ bar }: { bar: Doc<"announcementBars"> | null }) {
         <Input
           value={link}
           onChange={(event) => setLink(event.target.value)}
-          placeholder="/events or https://example.com"
+          placeholder="/dinners or https://example.com"
         />
       </Field>
       <PromotionActive checked={active} onChange={setActive} />

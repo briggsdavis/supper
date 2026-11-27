@@ -9,7 +9,7 @@ export default function AdminTitles() {
     <div>
       <div className="flex items-center justify-between">
         <h1 className="font-display text-4xl text-paper">Titles</h1>
-        <ButtonLink to="/admin/titles/new">New title</ButtonLink>
+        <ButtonLink to="/admin/movies/new">New title</ButtonLink>
       </div>
       <div className="mt-8">
         {titles === undefined ? (
@@ -20,11 +20,11 @@ export default function AdminTitles() {
           <ul className="divide-y divide-white/5">
             {titles.map((t) => (
               <li key={t._id} className="flex items-center justify-between py-3">
-                <Link to={`/admin/titles/${t._id}`} className="text-paper hover:underline">
+                <Link to={`/admin/movies/${t._id}`} className="text-paper hover:underline">
                   {t.name} <span className="text-neutral-500">{t.year}</span>
                 </Link>
                 <Link
-                  to={`/titles/${t.slug}`}
+                  to={`/movies/${t.slug}`}
                   className="text-sm text-neutral-400 hover:text-paper"
                 >
                   View

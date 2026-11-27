@@ -65,7 +65,6 @@ export const save = mutation({
     id: v.optional(v.id("events")),
     titleId: v.id("titles"),
     startsAt: v.number(),
-    venue: v.string(),
     address: v.string(),
     priceCents: v.number(),
     capacity: v.number(),
@@ -100,7 +99,6 @@ export const save = mutation({
       ...fields,
       slug,
       sold,
-      venue: fields.venue.trim(),
       address: fields.address.trim(),
       note: fields.note?.trim() || undefined,
       menu: fields.menu.filter((c) => c.dish.trim()),
@@ -122,11 +120,6 @@ export const remove = mutation({
     const event = await ctx.db.get("events", args.id)
     if (event === null) return null
     if (event.sold > 0) throw new ConvexError("This dinner has sold seats. Unpublish it instead.")
-    const comments = await ctx.db
-      .query("comments")
-      .withIndex("by_eventId", (q) => q.eq("eventId", args.id))
-      .take(500)
-    for (const c of comments) await ctx.db.delete("comments", c._id)
     await ctx.db.delete("events", args.id)
     return null
   },

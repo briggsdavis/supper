@@ -206,7 +206,6 @@ export const run = internalMutation({
         slug,
         titleId: rat._id,
         startsAt: Date.UTC(2026, 11, 20, 0, 0),
-        venue: "Venue TBA",
         address: "Address TBA",
         priceCents: 8500,
         capacity: 40,

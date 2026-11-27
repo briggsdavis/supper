@@ -10,7 +10,7 @@ export default function AdminEvents() {
     <div>
       <div className="flex items-center justify-between">
         <h1 className="font-display text-4xl text-paper">Dinners</h1>
-        <ButtonLink to="/admin/events/new">New dinner</ButtonLink>
+        <ButtonLink to="/admin/dinners/new">New dinner</ButtonLink>
       </div>
       <div className="mt-8">
         {events === undefined ? (
@@ -36,7 +36,7 @@ export default function AdminEvents() {
                     {shortDate(e.startsAt)} · {time(e.startsAt)}
                   </td>
                   <td className="text-paper">
-                    <Link to={`/admin/events/${e._id}`} className="hover:underline">
+                    <Link to={`/admin/dinners/${e._id}`} className="hover:underline">
                       {e.title?.name ?? "?"}
                     </Link>
                   </td>
@@ -53,12 +53,12 @@ export default function AdminEvents() {
                   </td>
                   <td className="space-x-4 text-right">
                     <Link
-                      to={`/admin/events/${e._id}/guests`}
+                      to={`/admin/dinners/${e._id}/guests`}
                       className="text-neutral-400 hover:text-paper"
                     >
                       Guests
                     </Link>
-                    <Link to={`/events/${e.slug}`} className="text-neutral-400 hover:text-paper">
+                    <Link to={`/dinners/${e.slug}`} className="text-neutral-400 hover:text-paper">
                       View
                     </Link>
                   </td>

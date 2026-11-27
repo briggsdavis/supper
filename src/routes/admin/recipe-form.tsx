@@ -33,7 +33,7 @@ function Form({ recipe, titleId }: { recipe: Doc<"recipes"> | null; titleId: Id<
   const [error, setError] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
   const set = (patch: Partial<typeof f>) => setF((old) => ({ ...old, ...patch }))
-  const back = () => navigate(`/admin/titles/${titleId}`)
+  const back = () => navigate(`/admin/movies/${titleId}`)
 
   return (
     <form

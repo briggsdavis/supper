@@ -10,7 +10,6 @@
 
 import type * as alerts from "../alerts.js";
 import type * as auth from "../auth.js";
-import type * as comments from "../comments.js";
 import type * as email from "../email.js";
 import type * as events from "../events.js";
 import type * as http from "../http.js";
@@ -20,6 +19,7 @@ import type * as promotions from "../promotions.js";
 import type * as recipes from "../recipes.js";
 import type * as seed from "../seed.js";
 import type * as square from "../square.js";
+import type * as suggestions from "../suggestions.js";
 import type * as titles from "../titles.js";
 import type * as users from "../users.js";
 
@@ -32,7 +32,6 @@ import type {
 declare const fullApi: ApiFromModules<{
   alerts: typeof alerts;
   auth: typeof auth;
-  comments: typeof comments;
   email: typeof email;
   events: typeof events;
   http: typeof http;
@@ -42,6 +41,7 @@ declare const fullApi: ApiFromModules<{
   recipes: typeof recipes;
   seed: typeof seed;
   square: typeof square;
+  suggestions: typeof suggestions;
   titles: typeof titles;
   users: typeof users;
 }>;

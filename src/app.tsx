@@ -3,8 +3,8 @@ import { useLayoutEffect, useState } from "react"
 import { NavLink, Outlet, ScrollRestoration, useLocation, useMatch } from "react-router"
 import { api } from "../convex/_generated/api"
 import { useMe } from "./components/auth.tsx"
-import MetalMarkBackground from "./components/metal-mark-background.tsx"
 import { Brand, SiteFooter, solidButton } from "./components/marketing.tsx"
+import MetalMarkBackground from "./components/metal-mark-background.tsx"
 import { AnnouncementBar, SitePopup } from "./components/site-promotions.tsx"
 import { hasMark, routeEntered } from "./route-motion.ts"
 import { useWeightedScroll } from "./use-weighted-scroll.ts"
@@ -26,7 +26,7 @@ export default function App() {
   // Runs after the scroll reset and before paint, so new blocks start hidden.
   useLayoutEffect(() => routeEntered(pathname), [pathname, key])
   const mark = hasMark(pathname)
-  const publicPage = !!home || !!contact || /^\/(events|titles|recipes)(\/|$)/.test(pathname)
+  const publicPage = !!home || !!contact || /^\/(dinners|movies|recipes)(\/|$)/.test(pathname)
   const promotionQuery = useQuery_experimental({
     query: api.promotions.current,
     args: publicPage ? {} : "skip",
@@ -52,11 +52,11 @@ export default function App() {
             <NavLink to="/" end className={groupLink}>
               Home
             </NavLink>
-            <NavLink to="/events" className={groupLink}>
+            <NavLink to="/dinners" className={groupLink}>
               Dinners
             </NavLink>
-            <NavLink to="/titles" className={groupLink}>
-              Recipes
+            <NavLink to="/movies" className={groupLink}>
+              Movies
             </NavLink>
           </nav>
           <div className="flex items-center gap-2 justify-self-end max-md:gap-1">
@@ -65,10 +65,7 @@ export default function App() {
                 {me ? "Account" : "Sign in"}
               </NavLink>
             )}
-            <NavLink
-              to="/contact"
-              className={`${solidButton} max-md:min-h-10 max-md:px-2`}
-            >
+            <NavLink to="/contact" className={`${solidButton} max-md:min-h-10 max-md:px-2`}>
               Contact
             </NavLink>
           </div>

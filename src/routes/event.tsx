@@ -1,14 +1,14 @@
 import { useQuery } from "convex/react"
 import { Link, useParams } from "react-router"
 import { api } from "../../convex/_generated/api"
-import Comments from "../components/comments.tsx"
 import { detailColumns, useDetailImage } from "../components/detail-link.tsx"
 import DinnerTickets, { DinnerFacts } from "../components/dinner-tickets.tsx"
+import Suggestions from "../components/suggestions.tsx"
 import { Loading, NotFound, Page, Poster } from "../components/ui.tsx"
 
 export default function Event() {
   const { slug = "" } = useParams()
-  const { preview, imageStyle, headingRef } = useDetailImage("events", slug)
+  const { preview, imageStyle, headingRef } = useDetailImage("dinners", slug)
   const event = useQuery(api.events.get, { slug })
   if (event === null) return <NotFound what="dinner" />
   if (!event && !preview) return <Loading />
@@ -61,7 +61,7 @@ export default function Event() {
           </ol>
           {event.title && (
             <Link
-              to={`/titles/${event.title.slug}`}
+              to={`/movies/${event.title.slug}`}
               className="mt-6 inline-block text-sm text-neutral-400 underline-offset-4 hover:text-paper hover:underline"
             >
               Recipes from {name}
@@ -72,10 +72,7 @@ export default function Event() {
 
       {event && (
         <div className="mt-16 max-w-2xl border-t border-white/10 pt-12">
-          <Comments
-            target={{ eventId: event._id }}
-            prompt="What do you want to eat from this one?"
-          />
+          <Suggestions movie={event.title?.name} />
         </div>
       )}
     </Page>

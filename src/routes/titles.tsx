@@ -2,6 +2,7 @@ import { useQuery } from "convex/react"
 import { useSearchParams } from "react-router"
 import { api } from "../../convex/_generated/api"
 import { DetailLink } from "../components/detail-link.tsx"
+import Suggestions from "../components/suggestions.tsx"
 import { Empty, Heading, Input, Loading, Page, Poster } from "../components/ui.tsx"
 
 export default function Titles() {
@@ -28,16 +29,14 @@ export default function Titles() {
           <Loading />
         ) : titles.length === 0 ? (
           <Empty>
-            {search
-              ? `Nothing for "${search}" yet. Ask for it in the comments of any title.`
-              : "No titles yet."}
+            {search ? `Nothing for "${search}" yet. Suggest it below.` : "No titles yet."}
           </Empty>
         ) : (
           <div className="grid grid-cols-2 gap-x-7 gap-y-10 sm:gap-x-9 sm:gap-y-12 md:grid-cols-3 xl:grid-cols-4">
             {titles.map((t) => (
               <DetailLink
                 key={t._id}
-                section="titles"
+                section="movies"
                 slug={t.slug}
                 preview={{ name: t.name, imageUrl: t.posterUrl, description: t.synopsis }}
                 className="group"
@@ -61,6 +60,9 @@ export default function Titles() {
             ))}
           </div>
         )}
+      </div>
+      <div className="mt-16 max-w-2xl border-t border-white/10 pt-12">
+        <Suggestions />
       </div>
     </Page>
   )

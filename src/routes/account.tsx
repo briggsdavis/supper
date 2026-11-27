@@ -49,7 +49,7 @@ function AccountPage() {
             ) : upcoming.length === 0 ? (
               <Empty>
                 No upcoming tickets.{" "}
-                <Link to="/events" className="text-paper underline underline-offset-4">
+                <Link to="/dinners" className="text-paper underline underline-offset-4">
                   See dinners
                 </Link>
               </Empty>
@@ -84,7 +84,7 @@ function Ticket({ order }: { order: FunctionReturnType<typeof api.orders.mine>[n
   if (!order.event) return null
   return (
     <Link
-      to={`/events/${order.event.slug}`}
+      to={`/dinners/${order.event.slug}`}
       className="flex gap-4 rounded-2xl border border-white/10 p-4 hover:border-white/30"
     >
       <Poster
@@ -97,7 +97,7 @@ function Ticket({ order }: { order: FunctionReturnType<typeof api.orders.mine>[n
         <p className="text-sm text-neutral-400">
           {longDate(order.event.startsAt)} · {time(order.event.startsAt)}
         </p>
-        <p className="text-sm text-neutral-400">{order.event.venue}</p>
+        <p className="text-sm text-neutral-400">{order.event.address}</p>
         <p className="mt-2 text-sm text-paper">
           {order.quantity} {order.quantity === 1 ? "seat" : "seats"}
           {order.checkedIn && <span className="text-neutral-500"> · Checked in</span>}
@@ -131,7 +131,7 @@ function Profile({ name, alerts }: { name: string; alerts: boolean }) {
       }}
     >
       <h2 className="font-display text-3xl text-paper">Profile</h2>
-      <Field label="Name" hint="Shown on your comments and the guest list.">
+      <Field label="Name" hint="Shown on your suggestions and the guest list.">
         <Input
           value={draft.name}
           onChange={(e) => setDraft({ ...draft, name: e.target.value })}

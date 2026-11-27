@@ -2,9 +2,9 @@ import { useQuery } from "convex/react"
 import type { FunctionReturnType } from "convex/server"
 import { Link, useLocation, useParams, useSearchParams } from "react-router"
 import { api } from "../../convex/_generated/api"
-import Comments from "../components/comments.tsx"
 import { DetailLink, detailColumns, useDetailImage } from "../components/detail-link.tsx"
 import DinnerTickets, { DinnerFacts } from "../components/dinner-tickets.tsx"
+import Suggestions from "../components/suggestions.tsx"
 import { Empty, Field, Loading, NotFound, Page, Poster, Select } from "../components/ui.tsx"
 import { longDate, time, youtubeId } from "../lib.ts"
 
@@ -12,7 +12,7 @@ export default function Title() {
   const { slug = "" } = useParams()
   const { state } = useLocation()
   const [params, setParams] = useSearchParams()
-  const { preview, imageStyle, headingRef } = useDetailImage("titles", slug)
+  const { preview, imageStyle, headingRef } = useDetailImage("movies", slug)
   const title = useQuery(api.titles.get, { slug })
 
   if (title === null) return <NotFound what="title" />
@@ -72,7 +72,7 @@ export default function Title() {
               <DinnerFacts dinner={dinner} />
               <DinnerTickets key={dinner._id} dinner={dinner} />
               <Link
-                to={`/events/${dinner.slug}`}
+                to={`/dinners/${dinner.slug}`}
                 className="mt-5 inline-block text-sm text-muted underline underline-offset-4 hover:text-paper"
               >
                 View dinner details
@@ -142,7 +142,7 @@ function TitleRecipes({
       </section>
 
       <div className="mt-16 max-w-2xl border-t border-white/10 pt-12">
-        <Comments target={{ titleId: title._id }} prompt="What should we cook from this?" />
+        <Suggestions movie={title.name} />
       </div>
     </>
   )

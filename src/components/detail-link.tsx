@@ -4,7 +4,7 @@ import { Link, useLocation, useViewTransitionState, type LinkProps } from "react
 import { api } from "../../convex/_generated/api"
 import { setMorphSource } from "../route-motion.ts"
 
-type DetailSection = "titles" | "events" | "recipes"
+type DetailSection = "movies" | "dinners" | "recipes"
 
 type Preview = {
   name: string
@@ -13,8 +13,8 @@ type Preview = {
 }
 
 const queries = {
-  titles: api.titles.get,
-  events: api.events.get,
+  movies: api.titles.get,
+  dinners: api.events.get,
   recipes: api.recipes.get,
 }
 

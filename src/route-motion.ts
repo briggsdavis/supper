@@ -42,7 +42,7 @@ const ATOMIC = new Set([
 ])
 const MEDIA = new Set(["IMG", "PICTURE", "VIDEO", "IFRAME", "CANVAS", "SVG"])
 
-export const hasMark = (path: string) => /^\/(events|titles)\/?$/.test(path)
+export const hasMark = (path: string) => /^\/(dinners|movies)\/?$/.test(path)
 const exempt = (path: string) => path === "/admin" || path.startsWith("/admin/")
 const reduced = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches
 
@@ -85,8 +85,7 @@ function isBlock(el: Element) {
     return true
   if (kids.length === 1 && MEDIA.has(kids[0].tagName.toUpperCase())) return true
   return kids.every(
-    (k) =>
-      !ATOMIC.has(k.tagName.toUpperCase()) && getComputedStyle(k).display.startsWith("inline"),
+    (k) => !ATOMIC.has(k.tagName.toUpperCase()) && getComputedStyle(k).display.startsWith("inline"),
   )
 }
 
@@ -139,10 +138,12 @@ function exit(to: string) {
 }
 
 function fadeOut(el: Element, delay: number) {
-  return el.animate(
-    [{ opacity: 0, filter: "blur(0.625rem)", transform: "translateY(0.75rem)" }],
-    { duration: EXIT.duration, delay, easing: ease.in, fill: "forwards" },
-  )
+  return el.animate([{ opacity: 0, filter: "blur(0.625rem)", transform: "translateY(0.75rem)" }], {
+    duration: EXIT.duration,
+    delay,
+    easing: ease.in,
+    fill: "forwards",
+  })
 }
 
 function fadeIn(blocks: Element[], lead: number) {
@@ -202,7 +203,9 @@ export function routeEntered(path: string) {
 
   stopWatching()
   seen = new WeakSet()
-  const protect = [...document.querySelectorAll("[data-route-root] [style*='view-transition-name']")]
+  const protect = [
+    ...document.querySelectorAll("[data-route-root] [style*='view-transition-name']"),
+  ]
   const lead = performance.now() - markIntroAt < 200 ? MARK_LEAD : 0
   const started = performance.now()
   fadeIn(onScreen(collect(protect)), lead)

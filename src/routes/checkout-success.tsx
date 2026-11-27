@@ -45,7 +45,7 @@ function Success() {
           {order.quantity} {order.quantity === 1 ? "seat" : "seats"} ·{" "}
           {longDate(order.event.startsAt)} · {time(order.event.startsAt)}
           <br />
-          <span className="text-neutral-400">{order.event.venue}</span>
+          <span className="text-neutral-400">{order.event.address}</span>
         </p>
       )}
       <p className="mt-6 text-neutral-400">
@@ -56,7 +56,7 @@ function Success() {
       <div className="mt-8 flex gap-3">
         <ButtonLink to="/account">Your tickets</ButtonLink>
         {order.event && (
-          <ButtonLink to={`/events/${order.event.slug}`} variant="ghost">
+          <ButtonLink to={`/dinners/${order.event.slug}`} variant="ghost">
             Dinner details
           </ButtonLink>
         )}

@@ -7,11 +7,11 @@ export default function AdminLayout() {
   const { pathname, search, hash } = useLocation()
   const section = pathname.split("/")[2]
   const pages = [
-    { to: "/admin", name: "Dinners", current: !section || section === "events" },
+    { to: "/admin/dinners", name: "Dinners", current: !section || section === "dinners" },
     {
-      to: "/admin/titles",
-      name: "Titles & recipes",
-      current: section === "titles" || section === "recipes",
+      to: "/admin/movies",
+      name: "Movies & recipes",
+      current: section === "movies" || section === "recipes",
     },
     {
       to: "/admin/announcement-bars",

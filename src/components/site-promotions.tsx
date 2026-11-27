@@ -1,3 +1,4 @@
+import { X } from "@phosphor-icons/react"
 import { useMutation } from "convex/react"
 import type { FunctionReturnType } from "convex/server"
 import {
@@ -193,7 +194,7 @@ function PopupDialog({ popup, onClose }: { popup: Popup; onClose: () => void }) 
         style={{ backgroundColor: popup.backgroundColor }}
         onClick={dismiss}
       >
-        <span aria-hidden="true">×</span>
+        <X size={18} aria-hidden="true" />
       </button>
       <div className="max-h-[min(85dvh,48rem)] overflow-y-auto overscroll-contain rounded-2xl">
         <div

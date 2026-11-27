@@ -17,7 +17,8 @@ function scrollToPlaying(event: MouseEvent<HTMLAnchorElement>) {
 }
 
 function FilmGallery() {
-  const films = useQuery(api.titles.featured)
+  const [now] = useState(() => Date.now())
+  const films = useQuery(api.titles.featured, { after: now })
   const [active, setActive] = useState<number | null>(null)
   const timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
 
@@ -32,15 +33,25 @@ function FilmGallery() {
     timer.current = setTimeout(() => setActive(null), 160)
   }
 
+  if (films?.length === 0)
+    return (
+      <p className="text-center text-muted">No dinners on the calendar yet. Check back soon.</p>
+    )
+
+  const few = (films?.length ?? 0) < 3
+
   return (
-    <div className="flex gap-5.5 max-sm:flex-col max-sm:gap-7" onPointerLeave={deactivate}>
+    <div
+      className="flex justify-center gap-5.5 max-sm:flex-col max-sm:gap-7"
+      onPointerLeave={deactivate}
+    >
       {films?.map((film, index) => (
         <Reveal
           key={film._id}
-          className={`supper-film-card min-w-0 flex-1 max-sm:basis-auto ${active === null ? "" : active === index ? "grow-[1.15]" : "grow-[0.925]"}`}
+          className={`supper-film-card min-w-0 flex-1 max-sm:basis-auto ${few ? "sm:max-w-[calc((100%-2.75rem)/3)]" : active === null ? "" : active === index ? "grow-[1.15]" : "grow-[0.925]"}`}
         >
           <DetailLink
-            section="titles"
+            section="movies"
             slug={film.slug}
             preview={{ name: film.name, imageUrl: film.posterUrl, description: film.synopsis }}
             onPointerEnter={(event) => {
@@ -133,7 +144,7 @@ export default function HomeSections() {
         </Reveal>
         <FilmGallery />
         <div className="mt-12 flex justify-center max-sm:mt-8.5">
-          <Link to="/titles" className={outlineButton}>
+          <Link to="/movies" className={outlineButton}>
             Discover more films
           </Link>
         </div>

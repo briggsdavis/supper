@@ -79,7 +79,7 @@ function Form({ title }: { title: Title | null }) {
               synopsis: f.synopsis,
               posterId: poster.id,
             })
-            navigate(`/admin/titles/${id}`, { replace: true })
+            navigate(`/admin/movies/${id}`, { replace: true })
             setBusy(false)
           } catch (err) {
             setError(errorText(err))
@@ -130,7 +130,7 @@ function Form({ title }: { title: Title | null }) {
                 if (!confirm("Delete this title and its recipes?")) return
                 try {
                   await remove({ id: title._id })
-                  navigate("/admin/titles")
+                  navigate("/admin/movies")
                 } catch (err) {
                   setError(errorText(err))
                 }

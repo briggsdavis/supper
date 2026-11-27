@@ -31,7 +31,7 @@ function link(value: string) {
       }
     }
   }
-  throw new ConvexError("Use a site path like /events or an absolute https:// link.")
+  throw new ConvexError("Use a site path like /dinners or an absolute https:// link.")
 }
 
 function activeAnnouncement(ctx: QueryCtx) {

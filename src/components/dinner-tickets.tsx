@@ -1,5 +1,15 @@
+import {
+  ArrowRight,
+  CalendarBlank,
+  CaretRight,
+  Clock,
+  MapPin,
+  Minus,
+  Plus,
+  type Icon,
+} from "@phosphor-icons/react"
 import { useAction } from "convex/react"
-import { useRef, useState } from "react"
+import { useRef, useState, type ReactNode } from "react"
 import { useLocation } from "react-router"
 import { api } from "../../convex/_generated/api"
 import type { Doc } from "../../convex/_generated/dataModel"
@@ -9,77 +19,37 @@ import { Alert, Button, ButtonLink } from "./ui.tsx"
 
 type Dinner = Pick<
   Doc<"events">,
-  | "_id"
-  | "slug"
-  | "startsAt"
-  | "venue"
-  | "address"
-  | "capacity"
-  | "sold"
-  | "priceCents"
-  | "published"
+  "_id" | "slug" | "startsAt" | "address" | "capacity" | "sold" | "priceCents" | "published"
 >
 
 const MAX_SEATS = 10
 const steps = ["Tickets", "Details", "Review"]
 const dollars = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" })
 
+function Fact({ label, icon: Icon, children }: { label: string; icon: Icon; children: ReactNode }) {
+  return (
+    <div className="flex items-center gap-2.5">
+      <dt className="shrink-0 text-muted">
+        <Icon size={20} role="img" aria-label={label} />
+      </dt>
+      <dd className="font-medium text-paper">{children}</dd>
+    </div>
+  )
+}
+
 export function DinnerFacts({ dinner }: { dinner: Dinner }) {
   const dateTime = new Date(dinner.startsAt).toISOString()
   return (
-    <dl className="mt-6 flex flex-wrap items-start gap-x-6 gap-y-4 text-sm">
-      <div className="relative pl-8">
-        <dt className="sr-only">Date</dt>
-        <dd className="font-medium text-paper">
-          <svg
-            aria-hidden="true"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.5"
-            className="absolute top-0.5 left-0 size-5 text-muted"
-          >
-            <rect x="3" y="5" width="18" height="16" rx="2" />
-            <path d="M3 10h18M8 3v4m8-4v4" />
-          </svg>
-          <time dateTime={dateTime}>{longDate(dinner.startsAt)}</time>
-        </dd>
-      </div>
-      <div className="relative pl-8">
-        <dt className="sr-only">Time</dt>
-        <dd className="font-medium text-paper">
-          <svg
-            aria-hidden="true"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.5"
-            className="absolute top-0.5 left-0 size-5 text-muted"
-          >
-            <circle cx="12" cy="12" r="9" />
-            <path d="M12 7v5l3 2" />
-          </svg>
-          <time dateTime={dateTime}>{time(dinner.startsAt)}</time>
-        </dd>
-      </div>
-      <div className="relative pl-8">
-        <dt className="sr-only">Location</dt>
-        <dd className="font-medium text-paper">
-          <svg
-            aria-hidden="true"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.5"
-            className="absolute top-0.5 left-0 size-5 text-muted"
-          >
-            <path d="M19 10c0 5-7 11-7 11s-7-6-7-11a7 7 0 1 1 14 0Z" />
-            <circle cx="12" cy="10" r="2.5" />
-          </svg>
-          {dinner.venue}
-        </dd>
-        <dd className="text-muted">{dinner.address}</dd>
-      </div>
+    <dl className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-3 text-sm">
+      <Fact label="Date" icon={CalendarBlank}>
+        <time dateTime={dateTime}>{longDate(dinner.startsAt)}</time>
+      </Fact>
+      <Fact label="Time" icon={Clock}>
+        <time dateTime={dateTime}>{time(dinner.startsAt)}</time>
+      </Fact>
+      <Fact label="Address" icon={MapPin}>
+        {dinner.address}
+      </Fact>
     </dl>
   )
 }
@@ -103,7 +73,7 @@ export default function DinnerTickets({ dinner }: { dinner: Dinner }) {
   const subtotal = dollars.format((dinner.priceCents * qty) / 100)
   const returnParams = new URLSearchParams(location.search)
   returnParams.set("tickets", String(qty))
-  if (location.pathname.startsWith("/titles/")) returnParams.set("dinner", dinner.slug)
+  if (location.pathname.startsWith("/movies/")) returnParams.set("dinner", dinner.slug)
   const signInPath = `/sign-in?next=${encodeURIComponent(`${location.pathname}?${returnParams}`)}`
   const ticketCount = `${qty} ${qty === 1 ? "ticket" : "tickets"}`
 
@@ -131,9 +101,11 @@ export default function DinnerTickets({ dinner }: { dinner: Dinner }) {
             className={index === step ? "font-semibold text-paper" : "text-muted"}
           >
             {index > 0 && (
-              <span aria-hidden="true" className="mr-2 text-muted sm:mr-3">
-                ›
-              </span>
+              <CaretRight
+                aria-hidden="true"
+                size={12}
+                className="mr-2 inline-block align-[-0.05em] text-muted sm:mr-3"
+              />
             )}
             {label}
           </li>
@@ -170,7 +142,7 @@ export default function DinnerTickets({ dinner }: { dinner: Dinner }) {
                   disabled={qty === 0}
                   onClick={() => setQty(qty - 1)}
                 >
-                  −
+                  <Minus size={20} aria-hidden="true" />
                 </Button>
                 <output
                   aria-label="Selected tickets"
@@ -185,7 +157,7 @@ export default function DinnerTickets({ dinner }: { dinner: Dinner }) {
                   disabled={qty >= limit}
                   onClick={() => setQty(qty + 1)}
                 >
-                  +
+                  <Plus size={20} aria-hidden="true" />
                 </Button>
               </div>
             </div>
@@ -259,8 +231,8 @@ export default function DinnerTickets({ dinner }: { dinner: Dinner }) {
                 disabled={!canContinue || (step === 1 && loading)}
                 onClick={() => goTo(step + 1)}
               >
-                {limit > 0 && <span aria-hidden="true">→</span>}
                 {limit === 0 ? "Sold out" : "Next"}
+                {limit > 0 && <ArrowRight size={16} aria-hidden="true" />}
               </Button>
             ) : (
               <Button

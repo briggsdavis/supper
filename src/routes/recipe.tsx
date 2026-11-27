@@ -42,7 +42,7 @@ export default function Recipe() {
           </h1>
           {recipe?.title && (
             <Link
-              to={`/titles/${recipe.title.slug}`}
+              to={`/movies/${recipe.title.slug}`}
               className="mt-3 inline-block font-mono text-sm text-neutral-400 hover:text-paper"
             >
               From {recipe.title.name}

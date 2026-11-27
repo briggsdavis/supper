@@ -74,7 +74,7 @@ export default defineSchema({
     slug: v.string(),
     titleId: v.id("titles"),
     startsAt: v.number(),
-    venue: v.string(),
+    venue: v.optional(v.string()),
     address: v.string(),
     priceCents: v.number(),
     capacity: v.number(),
@@ -103,12 +103,9 @@ export default defineSchema({
     .index("by_eventId", ["eventId"])
     .index("by_squareOrderId", ["squareOrderId"]),
 
-  comments: defineTable({
+  suggestions: defineTable({
     userId: v.id("users"),
-    titleId: v.optional(v.id("titles")),
-    eventId: v.optional(v.id("events")),
-    body: v.string(),
-  })
-    .index("by_titleId", ["titleId"])
-    .index("by_eventId", ["eventId"]),
+    movie: v.string(),
+    food: v.string(),
+  }),
 })
