@@ -13,13 +13,19 @@ export function useSmoothScroll() {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return
     lenis = new Lenis({
       autoRaf: true,
-      lerp: 0.1,
+      // A longer, eased glide so the smoothing is felt on trackpads too, not just mouse wheels.
+      duration: 1.35,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      smoothWheel: true,
+      wheelMultiplier: 0.9,
       // Leave dialogs, form fields and the home intro to the browser.
       prevent: (node) =>
         document.documentElement.classList.contains("supper-intro") ||
         !!node.closest?.("dialog[open], input, select, textarea, [contenteditable]"),
     })
+    document.documentElement.dataset.smoothScroll = "on"
     return () => {
+      delete document.documentElement.dataset.smoothScroll
       lenis?.destroy()
       lenis = null
     }
