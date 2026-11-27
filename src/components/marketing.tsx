@@ -73,21 +73,26 @@ export function ChromeDisc({
 export function Brand({
   className = "",
   discClassName = "",
+  wordmarkClassName = "",
+  showMark = true,
 }: {
   className?: string
   discClassName?: string
+  wordmarkClassName?: string
+  showMark?: boolean
 }) {
   return (
     <Link
-      className={`inline-flex w-max items-center gap-2.5 text-base font-bold tracking-[-0.055em] ${className}`}
+      className={`inline-flex w-max items-center gap-2.5 ${className}`}
       to="/"
+      aria-label="Scenes & Supper"
     >
-      <img
-        src="/logo-96.png"
-        alt=""
-        className={`aspect-square w-[1.4375rem] flex-none ${discClassName}`}
-      />
-      <span>Scenes &amp; Supper</span>
+      {showMark && (
+        <img src="/mark.png" alt="" className={`h-[1.375rem] w-auto flex-none ${discClassName}`} />
+      )}
+      <span className="flex">
+        <img src="/wordmark.png" alt="" className={`h-[0.9375rem] w-auto ${wordmarkClassName}`} />
+      </span>
     </Link>
   )
 }
@@ -109,7 +114,7 @@ export function SiteFooter() {
         </Link>
       </Reveal>
       <div className="relative flex min-h-14 items-center justify-between gap-5 max-sm:gap-2.5">
-        <Brand />
+        <Brand showMark={false} wordmarkClassName="h-6 max-sm:h-4.5" />
         <a
           href="https://socialsatisfaction.agency"
           target="_blank"
