@@ -96,32 +96,106 @@ function FilmGallery() {
   )
 }
 
-// Scattered layout: left / top as % of the field, width in vw, speed = parallax strength.
-const scatterSlots = [
-  { left: 8, top: 2, width: 22, ratio: "3/2", speed: 0.12 },
-  { left: 42, top: 6, width: 20, ratio: "4/5", speed: -0.06 },
-  { left: 74, top: 0, width: 22, ratio: "3/4", speed: 0.18 },
-  { left: 3, top: 27, width: 13, ratio: "16/9", speed: -0.1 },
-  { left: 19, top: 40, width: 15, ratio: "3/2", speed: 0.08 },
-  { left: 58, top: 36, width: 16, ratio: "1/1", speed: 0.22 },
-  { left: 82, top: 44, width: 14, ratio: "2/3", speed: -0.04 },
-  { left: 2, top: 66, width: 22, ratio: "16/10", speed: 0.16 },
-  { left: 36, top: 62, width: 24, ratio: "3/2", speed: -0.08 },
-  { left: 68, top: 74, width: 25, ratio: "16/10", speed: 0.1 },
-  { left: 28, top: 88, width: 14, ratio: "4/5", speed: 0.2 },
+// Free cinema imagery: photos from Unsplash, muted clips from Mixkit (about a quarter are video).
+const unsplash = (id: string) =>
+  `https://images.unsplash.com/photo-${id}?auto=format&fit=crop&w=1400&q=75`
+const mixkit = (id: number) => `https://assets.mixkit.co/videos/${id}/${id}-720.mp4`
+
+type ScatterItem = {
+  src: string
+  video?: boolean
+  left: number // % of the field
+  top: number // % of the field
+  width: number // vw
+  ratio: string
+  speed: number // parallax strength, negative drifts the other way
+}
+
+const scatterItems: ScatterItem[] = [
+  {
+    src: unsplash("1478720568477-152d9b164e26"),
+    left: 5,
+    top: 1,
+    width: 30,
+    ratio: "3/2",
+    speed: 0.12,
+  },
+  { src: mixkit(28422), video: true, left: 41, top: 7, width: 22, ratio: "4/5", speed: -0.06 },
+  {
+    src: unsplash("1489599849927-2ee91cede3ba"),
+    left: 70,
+    top: 0,
+    width: 26,
+    ratio: "3/4",
+    speed: 0.18,
+  },
+  {
+    src: unsplash("1517604931442-7e0c8ed2963c"),
+    left: 2,
+    top: 30,
+    width: 15,
+    ratio: "16/9",
+    speed: -0.1,
+  },
+  {
+    src: unsplash("1485846234645-a62644f84728"),
+    left: 21,
+    top: 40,
+    width: 18,
+    ratio: "3/2",
+    speed: 0.08,
+  },
+  { src: mixkit(25478), video: true, left: 52, top: 35, width: 32, ratio: "16/9", speed: 0.22 },
+  {
+    src: unsplash("1574267432553-4b4628081c31"),
+    left: 86,
+    top: 47,
+    width: 12,
+    ratio: "2/3",
+    speed: -0.04,
+  },
+  {
+    src: unsplash("1536440136628-849c177e76a1"),
+    left: 3,
+    top: 64,
+    width: 28,
+    ratio: "16/10",
+    speed: 0.16,
+  },
+  {
+    src: unsplash("1626814026160-2237a95fc5a0"),
+    left: 37,
+    top: 62,
+    width: 20,
+    ratio: "4/5",
+    speed: -0.08,
+  },
+  { src: mixkit(28417), video: true, left: 63, top: 72, width: 30, ratio: "16/10", speed: 0.1 },
+  {
+    src: unsplash("1485095329183-d0797cdc5676"),
+    left: 22,
+    top: 88,
+    width: 16,
+    ratio: "3/2",
+    speed: 0.2,
+  },
+  {
+    src: unsplash("1535016120720-40c646be5580"),
+    left: 48,
+    top: 92,
+    width: 13,
+    ratio: "1/1",
+    speed: -0.12,
+  },
 ]
 
-// About a viewport of scattered film images. Each one grows from 80% to 100% as it reaches
-// the middle of the screen, then eases to 90% on the way out, with its own parallax drift.
+// About a viewport of scattered cinema photos and clips, each drifting at its own parallax speed.
 export function MovieScatter() {
-  const titles = useQuery(api.titles.list, { search: "" })
   const field = useRef<HTMLDivElement>(null)
-  const posters = (titles ?? []).flatMap((t) => (t.posterUrl ? [t.posterUrl] : []))
 
   useEffect(() => {
     const root = field.current
-    if (!root || posters.length === 0) return
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return
+    if (!root || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return
     const items = [...root.querySelectorAll<HTMLElement>("[data-scatter]")]
     let frame = 0
 
@@ -135,10 +209,8 @@ export function MovieScatter() {
           -1,
           Math.min(1, (vh / 2 - (rect.top + rect.height / 2)) / (vh / 2 + rect.height / 2)),
         )
-        const scale = p < 0 ? 1 + 0.2 * p : 1 - 0.1 * p
-        const shift = p * Number(item.dataset.speed) * vh
         const inner = item.firstElementChild as HTMLElement
-        inner.style.transform = `translate3d(0, ${(-shift).toFixed(1)}px, 0) scale(${scale.toFixed(4)})`
+        inner.style.transform = `translate3d(0, ${(-p * Number(item.dataset.speed) * vh).toFixed(1)}px, 0)`
       }
     }
     const request = () => {
@@ -153,37 +225,48 @@ export function MovieScatter() {
       window.removeEventListener("scroll", request)
       window.removeEventListener("resize", request)
     }
-  }, [posters.length])
-
-  if (posters.length === 0) return null
+  }, [])
 
   return (
     <section aria-hidden="true" className="relative overflow-hidden py-[12svh]">
       <div ref={field} className="relative mx-auto h-[150svh] max-md:h-[130svh]">
-        {scatterSlots.map((slot, index) => (
+        {scatterItems.map((item) => (
           <div
-            key={index}
+            key={item.src}
             data-scatter
-            data-speed={slot.speed}
-            className="absolute max-md:w-[calc(var(--w)*1.7)]!"
+            data-speed={item.speed}
+            className="absolute max-md:w-[calc(var(--w)*1.6)]!"
             style={
               {
-                left: `${slot.left}%`,
-                top: `${slot.top}%`,
-                width: `${slot.width}vw`,
-                "--w": `${slot.width}vw`,
-                maxWidth: `${100 - slot.left}%`,
+                left: `${item.left}%`,
+                top: `${item.top}%`,
+                width: `${item.width}vw`,
+                "--w": `${item.width}vw`,
+                maxWidth: `${100 - item.left}%`,
               } as CSSProperties
             }
           >
-            <div className="origin-center will-change-transform">
-              <img
-                src={posters[index % posters.length]}
-                alt=""
-                loading="lazy"
-                className="block w-full rounded-media object-cover"
-                style={{ aspectRatio: slot.ratio }}
-              />
+            <div className="will-change-transform">
+              {item.video ? (
+                <video
+                  src={item.src}
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
+                  preload="metadata"
+                  className="block w-full rounded-media bg-[#1a1818] object-cover"
+                  style={{ aspectRatio: item.ratio }}
+                />
+              ) : (
+                <img
+                  src={item.src}
+                  alt=""
+                  loading="lazy"
+                  className="block w-full rounded-media bg-[#1a1818] object-cover"
+                  style={{ aspectRatio: item.ratio }}
+                />
+              )}
             </div>
           </div>
         ))}
