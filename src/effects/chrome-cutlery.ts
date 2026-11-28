@@ -1,7 +1,7 @@
 import { axisAngle, type ChromeScene, type Palette } from "./chrome-lens.ts"
 import { createMarch } from "./chrome-march.ts"
 
-const SCENE = `
+const UNIFORMS = `
 uniform float uAngle;
 uniform float uTilt;
 uniform float uMorph;
@@ -10,7 +10,9 @@ uniform float uPrism;
 uniform float uFlat;
 uniform float uLay;
 uniform float uDiscTilt;
+`
 
+export const CUTLERY_MATH = `
 float cro(vec2 a, vec2 b) { return a.x * b.y - a.y * b.x; }
 
 float taper(vec2 p, vec2 pa, vec2 pb, float ra, float rb) {
@@ -35,7 +37,9 @@ float roundBox(vec2 p, vec2 b, vec4 r) {
   vec2 q = abs(p) - b + r.x;
   return min(max(q.x, q.y), 0.0) + length(max(q, 0.0)) - r.x;
 }
+`
 
+const MOTION = `
 float pose() {
   return 1.0 - smoothstep(0.0, 0.2, uMorph);
 }
@@ -69,7 +73,9 @@ vec3 bend(vec2 q, float center) {
   float theta = atan(d.y, -d.x);
   return vec3(R - rho, R * theta + center, clamp(rho * k, 0.45, 1.0));
 }
+`
 
+export const CUTLERY_PARTS = `
 float handle(vec3 p, float top, float r) {
   vec2 q = vec2(length(vec2(p.x, p.z * 2.4)), p.y);
   return taper(q, vec2(0.0, -0.9), vec2(0.0, top), 0.088, r) / 2.4;
@@ -94,7 +100,9 @@ float knifeBlade(vec2 q) {
   float d = roundBox(q - vec2(0.014, 0.59), vec2(0.082, 0.62), vec4(0.03));
   return smax(d, min(length(q - vec2(-0.254, 0.734)) - 0.35, q.y - 0.734), 0.03);
 }
+`
 
+const BODY = `
 float fork(vec4 q) {
   vec3 p = q.xyz;
   float b = bound(p) * q.w;
@@ -175,7 +183,9 @@ float map(vec3 p) {
   if (f > 0.0) d = mix(d, disc(g), m);
   return d * uScale;
 }
+`
 
+export const PRISM_COAT = `
 float scratchHash(vec2 p) {
   return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453);
 }
@@ -253,7 +263,9 @@ vec3 prism(vec3 l, vec3 n, vec3 V, float wobble) {
   col += sc * (0.12 + 0.8 * glow(normalize(R + shift * 0.2))) * vec3(0.9, 0.95, 1.0);
   return col;
 }
+`
 
+const COAT = `
 vec3 discCoat(vec3 l, vec3 pos, vec3 n, vec3 V) {
   float r = length(l.xy);
   vec3 radial = pos - n * dot(pos, n);
@@ -278,6 +290,8 @@ vec3 coat(vec3 pos, vec3 n, vec3 V) {
   return mix(col, discCoat(g, pos, n, V), w);
 }
 `
+
+const SCENE = UNIFORMS + CUTLERY_MATH + MOTION + CUTLERY_PARTS + BODY + PRISM_COAT + COAT
 
 export function createChromeCutlery(
   canvas: HTMLCanvasElement,

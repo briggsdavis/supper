@@ -6,6 +6,7 @@ import { internalMutation, internalQuery, query, type MutationCtx } from "./_gen
 import { sendEmail, SITE_URL } from "./email"
 import { emailOf, requireUser } from "./lib"
 import { withPoster } from "./titles"
+import { hasFullName } from "./users"
 
 export const HOLD_MS = 33 * 60 * 1000
 export const MAX_SEATS = 10
@@ -67,6 +68,8 @@ export const reserve = internalMutation({
   }),
   handler: async (ctx, args) => {
     const userId = await requireUser(ctx)
+    if (!hasFullName(await ctx.db.get("users", userId)))
+      throw new ConvexError("Add your first and last name before buying tickets.")
     const event = await ctx.db.get("events", args.eventId)
     if (event === null || !event.published) throw new ConvexError("This dinner isn't on sale.")
     if (event.startsAt < Date.now()) throw new ConvexError("This dinner already happened.")

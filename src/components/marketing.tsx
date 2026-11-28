@@ -1,10 +1,9 @@
 import { useEffect, useRef, type ReactNode } from "react"
 import { Link } from "react-router"
 import { createChromeCutlery } from "../effects/chrome-cutlery.ts"
+import { createMetalMark } from "../effects/metal-mark.ts"
 import ChromeCanvas from "./chrome-canvas.tsx"
 
-const createFooterDisc = (canvas: HTMLCanvasElement) =>
-  createChromeCutlery(canvas, "flame", true, () => 1, 0, true, -0.95)
 const createContactDisc = (canvas: HTMLCanvasElement) =>
   createChromeCutlery(canvas, "flame", true, () => 1, 0, true, -0.95, 0.12)
 
@@ -62,7 +61,7 @@ export function ChromeDisc({
   return (
     <div className={`pointer-events-none aspect-square ${className}`} aria-hidden="true">
       <ChromeCanvas
-        create={followPointer ? createContactDisc : createFooterDisc}
+        create={createContactDisc}
         className="absolute inset-0"
         viewportPointer={followPointer}
       />
@@ -105,7 +104,12 @@ export function SiteFooter() {
       data-route-root
       className={`${section} relative isolate grid min-h-[40.625rem] grid-rows-[1fr_auto] items-center overflow-hidden bg-[linear-gradient(180deg,transparent,#ffffff04_65%,#ffffff06)] pt-25 pb-7 text-paper max-sm:min-h-[36.875rem] max-sm:pt-20 max-sm:pb-5.5`}
     >
-      <ChromeDisc className="absolute top-1/2 -right-[4vw] -z-1 w-[min(70vw,56rem)] -translate-y-1/2 max-sm:top-[12%] max-sm:-right-[24vw] max-sm:w-[90vw] max-sm:opacity-50" />
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute top-1/2 right-[max(7vw,1.875rem)] -z-1 h-[min(34rem,80%)] w-[min(28rem,40vw)] -translate-y-1/2 max-sm:top-[8%] max-sm:right-0 max-sm:h-[60vw] max-sm:w-[50vw] max-sm:translate-y-0 max-sm:opacity-50"
+      >
+        <ChromeCanvas create={createMetalMark} className="h-full w-full" />
+      </div>
       <Reveal className="relative">
         <h2 className={`${sectionTitle} mb-6.5 text-5xl md:text-6xl lg:text-7xl`}>
           Make tonight

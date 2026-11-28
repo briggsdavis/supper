@@ -4,6 +4,7 @@ import { useState } from "react"
 import { Link, useNavigate, useParams } from "react-router"
 import { api } from "../../../convex/_generated/api"
 import type { Id } from "../../../convex/_generated/dataModel"
+import MediaGalleryAdmin from "../../components/media-gallery-admin.tsx"
 import {
   Alert,
   Button,
@@ -144,6 +145,7 @@ function Form({ title }: { title: Title | null }) {
 
       <aside className="space-y-8">
         <Poster url={poster.url} name={f.name || "Poster"} className="w-48" />
+        {title && <MediaGalleryAdmin titleId={title._id} media={title.media} />}
         {title && (
           <div>
             <div className="flex items-center justify-between">

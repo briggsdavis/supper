@@ -2,6 +2,7 @@ import { ConvexError, v } from "convex/values"
 import type { Doc } from "./_generated/dataModel"
 import { mutation, query, type QueryCtx } from "./_generated/server"
 import { requireAdmin, uniqueSlug, withRecipeImage } from "./lib"
+import { removeAllMedia, titleMedia } from "./media"
 import { vKind } from "./schema"
 
 export async function withPoster(ctx: QueryCtx, title: Doc<"titles">) {
@@ -67,6 +68,7 @@ export const get = query({
       ...(await withPoster(ctx, title)),
       recipes: await Promise.all(recipes.map((recipe) => withRecipeImage(ctx, recipe))),
       events: events.filter((e) => e.published),
+      media: await titleMedia(ctx, title._id),
     }
   },
 })
@@ -89,7 +91,11 @@ export const byId = query({
       .query("recipes")
       .withIndex("by_titleId", (q) => q.eq("titleId", title._id))
       .take(100)
-    return { ...(await withPoster(ctx, title)), recipes }
+    return {
+      ...(await withPoster(ctx, title)),
+      recipes,
+      media: await titleMedia(ctx, title._id),
+    }
   },
 })
 
@@ -141,6 +147,7 @@ export const remove = mutation({
       .withIndex("by_titleId", (q) => q.eq("titleId", args.id))
       .take(200)
     for (const r of recipes) await ctx.db.delete("recipes", r._id)
+    await removeAllMedia(ctx, args.id)
     const title = await ctx.db.get("titles", args.id)
     if (title?.posterId) await ctx.storage.delete(title.posterId)
     await ctx.db.delete("titles", args.id)

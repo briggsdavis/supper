@@ -1,5 +1,6 @@
 import { getAuthUserId } from "@convex-dev/auth/server"
-import { v } from "convex/values"
+import { ConvexError, v } from "convex/values"
+import type { Doc } from "./_generated/dataModel"
 import { internalMutation, mutation, query } from "./_generated/server"
 import { emailOf, isAdmin, requireUser } from "./lib"
 
@@ -26,22 +27,55 @@ export const me = query({
     return {
       _id: user._id,
       name: user.name ?? "",
+      ...nameParts(user),
       alerts: user.alerts ?? false,
+      hasFullName: hasFullName(user),
       email: await emailOf(ctx, userId),
       isAdmin: await isAdmin(ctx, userId),
     }
   },
 })
 
-export const update = mutation({
-  args: { name: v.string(), alerts: v.boolean() },
+export function nameParts(user: Doc<"users">) {
+  if (user.firstName !== undefined || user.lastName !== undefined) {
+    return { firstName: user.firstName ?? "", lastName: user.lastName ?? "" }
+  }
+  const [firstName = "", ...rest] = (user.name ?? "").trim().split(/\s+/)
+  return { firstName, lastName: rest.join(" ") }
+}
+
+export function hasFullName(user: Doc<"users"> | null) {
+  return !!user?.firstName?.trim() && !!user.lastName?.trim()
+}
+
+function cleanName(value: string, label: string) {
+  const name = value.trim().replace(/\s+/g, " ").slice(0, 40)
+  if (!name) throw new ConvexError(`${label} is required.`)
+  return name
+}
+
+function names(args: { firstName: string; lastName: string }) {
+  const firstName = cleanName(args.firstName, "First name")
+  const lastName = cleanName(args.lastName, "Last name")
+  return { firstName, lastName, name: `${firstName} ${lastName}` }
+}
+
+export const setAlerts = mutation({
+  args: { alerts: v.boolean() },
   returns: v.null(),
   handler: async (ctx, args) => {
     const userId = await requireUser(ctx)
-    await ctx.db.patch("users", userId, {
-      name: args.name.trim().slice(0, 60),
-      alerts: args.alerts,
-    })
+    await ctx.db.patch("users", userId, { alerts: args.alerts })
+    return null
+  },
+})
+
+export const setName = mutation({
+  args: { firstName: v.string(), lastName: v.string() },
+  returns: v.null(),
+  handler: async (ctx, args) => {
+    const userId = await requireUser(ctx)
+    await ctx.db.patch("users", userId, names(args))
     return null
   },
 })

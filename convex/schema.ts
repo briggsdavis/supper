@@ -41,6 +41,8 @@ export default defineSchema({
 
   users: defineTable({
     name: v.optional(v.string()),
+    firstName: v.optional(v.string()),
+    lastName: v.optional(v.string()),
     alerts: v.optional(v.boolean()),
   }).index("by_alerts", ["alerts"]),
 
@@ -54,6 +56,13 @@ export default defineSchema({
   })
     .index("by_slug", ["slug"])
     .searchIndex("search_name", { searchField: "name" }),
+
+  titleMedia: defineTable({
+    titleId: v.id("titles"),
+    storageId: v.id("_storage"),
+    kind: v.union(v.literal("image"), v.literal("video")),
+    order: v.number(),
+  }).index("by_titleId_and_order", ["titleId", "order"]),
 
   recipes: defineTable({
     titleId: v.id("titles"),

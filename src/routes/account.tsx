@@ -67,7 +67,7 @@ function AccountPage() {
           </div>
         </section>
         <section className="space-y-10">
-          <Profile name={me.name} alerts={me.alerts} />
+          <Profile firstName={me.firstName} lastName={me.lastName} alerts={me.alerts} />
           <div className="flex flex-wrap gap-3">
             {me.isAdmin && <ButtonLink to="/admin">Admin</ButtonLink>}
             <Button variant="ghost" onClick={() => void signOut()}>
@@ -107,48 +107,84 @@ function Ticket({ order }: { order: FunctionReturnType<typeof api.orders.mine>[n
   )
 }
 
-function Profile({ name, alerts }: { name: string; alerts: boolean }) {
-  const update = useMutation(api.users.update)
-  const [draft, setDraft] = useState({ name, alerts })
+function Profile({
+  firstName,
+  lastName,
+  alerts,
+}: {
+  firstName: string
+  lastName: string
+  alerts: boolean
+}) {
+  const setName = useMutation(api.users.setName)
+  const setAlerts = useMutation(api.users.setAlerts)
+  const [name, setNameDraft] = useState({ firstName, lastName })
   const [state, setState] = useState<"idle" | "saving" | "saved">("idle")
   const [error, setError] = useState<string | null>(null)
-  useEffect(() => setDraft({ name, alerts }), [name, alerts])
+  const ready = !!name.firstName.trim() && !!name.lastName.trim()
+  const changed = name.firstName.trim() !== firstName || name.lastName.trim() !== lastName
+
+  const save = async (fn: () => Promise<unknown>) => {
+    setState("saving")
+    setError(null)
+    try {
+      await fn()
+      setState("saved")
+    } catch (err) {
+      setError(errorText(err))
+      setState("idle")
+    }
+  }
+
+  useEffect(() => {
+    if (!ready || !changed) return
+    const timer = setTimeout(() => void save(() => setName(name)), 600)
+    return () => clearTimeout(timer)
+  }, [name, ready, changed])
 
   return (
-    <form
-      className="space-y-5"
-      onSubmit={async (e) => {
-        e.preventDefault()
-        setState("saving")
-        setError(null)
-        try {
-          await update(draft)
-          setState("saved")
-        } catch (err) {
-          setError(errorText(err))
-          setState("idle")
-        }
-      }}
-    >
-      <h2 className="font-display text-3xl text-paper">Profile</h2>
-      <Field label="Name" hint="Shown on your suggestions and the guest list.">
-        <Input
-          value={draft.name}
-          onChange={(e) => setDraft({ ...draft, name: e.target.value })}
-          maxLength={60}
-        />
-      </Field>
+    <div className="space-y-5">
+      <div className="flex items-baseline justify-between gap-4">
+        <h2 className="font-display text-3xl text-paper">Profile</h2>
+        <p role="status" className="text-sm text-muted">
+          {state === "saving" ? "Saving…" : state === "saved" && !changed ? "Saved" : ""}
+        </p>
+      </div>
+      <div className="grid gap-5 sm:grid-cols-2">
+        <Field label="First name">
+          <Input
+            value={name.firstName}
+            onChange={(e) => setNameDraft({ ...name, firstName: e.target.value })}
+            autoComplete="given-name"
+            maxLength={40}
+            required
+          />
+        </Field>
+        <Field label="Last name">
+          <Input
+            value={name.lastName}
+            onChange={(e) => setNameDraft({ ...name, lastName: e.target.value })}
+            autoComplete="family-name"
+            maxLength={40}
+            required
+          />
+        </Field>
+      </div>
+      <p className="-mt-2 text-sm text-muted">
+        {ready
+          ? "Needed to buy tickets. Shown on your suggestions and the guest list."
+          : "Add your first and last name to buy tickets."}
+      </p>
       <label className="flex items-center gap-3 text-neutral-300">
         <input
           type="checkbox"
-          checked={draft.alerts}
-          onChange={(e) => setDraft({ ...draft, alerts: e.target.checked })}
+          checked={alerts}
+          onChange={(e) => void save(() => setAlerts({ alerts: e.target.checked }))}
           className="size-4 accent-[#f4efe6]"
         />
         Email me when new dinners open
       </label>
       {error && <Alert>{error}</Alert>}
-      <Button disabled={state === "saving"}>{state === "saved" ? "Saved" : "Save"}</Button>
-    </form>
+    </div>
   )
 }

@@ -29,6 +29,29 @@ export const latest = query({
   },
 })
 
+export const list = query({
+  args: {},
+  handler: async (ctx) => {
+    const recipes = await ctx.db.query("recipes").order("desc").take(200)
+    const titles = new Map(
+      await Promise.all(
+        [...new Set(recipes.map((r) => r.titleId))].map(
+          async (id) => [id, await ctx.db.get("titles", id)] as const,
+        ),
+      ),
+    )
+    return await Promise.all(
+      recipes.map(async (r) => {
+        const title = titles.get(r.titleId)
+        return {
+          ...(await withRecipeImage(ctx, r)),
+          title: title ? { name: title.name, slug: title.slug, year: title.year } : null,
+        }
+      }),
+    )
+  },
+})
+
 export const featured = query({
   args: {},
   handler: async (ctx) => {

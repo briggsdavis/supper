@@ -1,10 +1,11 @@
+import { ArrowRight } from "@phosphor-icons/react"
 import { useQuery } from "convex/react"
 import { Link, useParams } from "react-router"
 import { api } from "../../convex/_generated/api"
 import { detailColumns, useDetailImage } from "../components/detail-link.tsx"
 import DinnerTickets, { DinnerFacts } from "../components/dinner-tickets.tsx"
 import Suggestions from "../components/suggestions.tsx"
-import { Loading, NotFound, Page, Poster } from "../components/ui.tsx"
+import { ButtonLink, Loading, NotFound, Page, Poster } from "../components/ui.tsx"
 
 export default function Event() {
   const { slug = "" } = useParams()
@@ -39,6 +40,12 @@ export default function Event() {
             {name}
           </h1>
           {description && <p className="mt-5 max-w-2xl text-lg text-neutral-300">{description}</p>}
+          {event?.title && (
+            <ButtonLink to={`/movies/${event.title.slug}`} variant="ghost" className="mt-5">
+              About the movie
+              <ArrowRight size={16} />
+            </ButtonLink>
+          )}
           {event && (
             <>
               <DinnerFacts dinner={event} />

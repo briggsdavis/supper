@@ -1,3 +1,4 @@
+import { PRISM_COAT } from "./chrome-cutlery.ts"
 import { link, type ChromeScene } from "./chrome-lens.ts"
 
 type Point = readonly [x: number, y: number]
@@ -168,49 +169,30 @@ in vec3 vNormal;
 in vec3 vPosition;
 in vec3 vLocal;
 in float vFace;
+uniform float uTime;
+uniform vec2 uLight;
 out vec4 outColor;
 
-float panel(vec3 ray, vec3 aim, float focus) {
-  return pow(max(0.0, dot(ray, normalize(aim))), focus);
-}
+const float uLay = 0.0;
 
-float grain(vec2 p) {
-  p = fract(p * vec2(123.34, 456.21));
-  p += dot(p, p + 45.32);
-  return fract(p.x * p.y) - 0.5;
+mat2 rot(float a) {
+  float c = cos(a);
+  float s = sin(a);
+  return mat2(c, -s, s, c);
 }
-
-float scratch(vec2 p, vec2 from, vec2 to) {
-  vec2 edge = to - from;
-  float t = clamp(dot(p - from, edge) / dot(edge, edge), 0.0, 1.0);
-  float d = length(p - from - edge * t);
-  float width = max(0.0017, length(fwidth(p)) * 0.6);
-  return (1.0 - smoothstep(0.0, width, d)) * sin(3.14159265 * t);
-}
-
+${PRISM_COAT}
 void main() {
   vec3 n = normalize(vNormal);
   vec3 view = normalize(vec3(0.0, 0.0, 5.6) - vPosition);
-  vec3 ray = reflect(-view, n);
-  float blue = panel(ray, vec3(-0.62, 0.43, 0.78), 6.0);
-  float amber = panel(ray, vec3(-0.53, -0.68, 0.49), 11.0);
-  float strip = panel(ray, vec3(0.62, 0.65, 0.41), 16.0);
-  float rim = pow(1.0 - max(0.0, dot(n, view)), 3.0);
   float face = smoothstep(0.85, 0.995, vFace);
-  vec3 metal = mix(vec3(0.085, 0.094, 0.116), vec3(0.128, 0.150, 0.186), face);
-  metal += blue * vec3(0.07, 0.14, 0.26);
-  metal += amber * vec3(0.40, 0.23, 0.10);
-  metal += strip * vec3(0.37, 0.48, 0.64);
-  metal += rim * vec3(0.08, 0.12, 0.19);
-  float wear = scratch(vLocal.xy, vec2(0.05, 0.93), vec2(0.29, 1.12));
-  wear += 0.8 * scratch(vLocal.xy, vec2(0.24, -0.68), vec2(0.49, -0.49));
-  metal += face * wear * (0.065 + 0.08 * blue);
-  metal += 0.025 * grain(floor(vLocal.xy * 390.0) + floor(vLocal.z * 175.0));
-  outColor = vec4(clamp(metal, 0.0, 1.0), 1.0);
+  vec2 swell = vPosition.xy * vec2(0.7, 0.45) + 0.25 * sin(vLocal.yx * vec2(2.3, 1.7) + uTime * 0.15);
+  n = normalize(n + face * vec3(swell, 0.0));
+  vec3 col = prism(vLocal * 1.6, n, view, 0.3) * 1.25;
+  outColor = vec4(clamp(col, 0.0, 1.0), 1.0);
 }
 `
 
-export function createMetalMark(canvas: HTMLCanvasElement, intro = false): ChromeScene | null {
+export function createMetalMark(canvas: HTMLCanvasElement): ChromeScene | null {
   const gl = canvas.getContext("webgl2", { antialias: true, powerPreference: "low-power" })
   if (!gl) return null
 
@@ -231,6 +213,8 @@ export function createMetalMark(canvas: HTMLCanvasElement, intro = false): Chrom
   const pose = gl.getUniformLocation(program, "uPose")
   const aspect = gl.getUniformLocation(program, "uAspect")
   const focal = gl.getUniformLocation(program, "uFocal")
+  const uTime = gl.getUniformLocation(program, "uTime")
+  const uLight = gl.getUniformLocation(program, "uLight")
   const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)")
   const restingAngle = 0.22
   const idleSpeed = 0.16
@@ -239,10 +223,45 @@ export function createMetalMark(canvas: HTMLCanvasElement, intro = false): Chrom
   let previousScroll = window.scrollY
   let lastFrame = -Infinity
   let wasStill = false
-  // Entrance spin: starts fast and settles onto the idle rotation.
-  const introDuration = 1.1
-  const introTurns = 1.5
-  let introStart: number | null = intro && !reducedMotion.matches ? -1 : null
+  let pushX = 0
+  let pushY = 0
+  let aim = { x: 0, y: 0 }
+  let tilt = { x: 0, y: 0 }
+  let lastPointer: { x: number; y: number } | null = null
+  let inside = false
+  const zone = () => canvas.closest("footer") ?? canvas
+  const onPointer = (event: PointerEvent) => {
+    const box = zone().getBoundingClientRect()
+    inside =
+      event.clientX >= box.left &&
+      event.clientX <= box.right &&
+      event.clientY >= box.top &&
+      event.clientY <= box.bottom
+    if (!inside) {
+      lastPointer = null
+      aim = { x: 0, y: 0 }
+      return
+    }
+    if (lastPointer) {
+      pushX += event.clientX - lastPointer.x
+      pushY += event.clientY - lastPointer.y
+    }
+    lastPointer = { x: event.clientX, y: event.clientY }
+    const rect = canvas.getBoundingClientRect()
+    const reach = Math.max(rect.width, rect.height) * 1.5
+    aim = {
+      x: Math.max(-1, Math.min(1, (event.clientX - rect.left - rect.width / 2) / reach)),
+      y: Math.max(-1, Math.min(1, (event.clientY - rect.top - rect.height / 2) / reach)),
+    }
+  }
+  const onLeave = () => {
+    inside = false
+    lastPointer = null
+    aim = { x: 0, y: 0 }
+  }
+  window.addEventListener("pointermove", onPointer, { passive: true })
+  document.documentElement.addEventListener("pointerleave", onLeave)
+  let light = { x: 0, y: 0 }
 
   return {
     resize(width, height) {
@@ -255,42 +274,47 @@ export function createMetalMark(canvas: HTMLCanvasElement, intro = false): Chrom
       gl.uniform1f(focal, 5.6 * Math.min(0.52, ratio * 0.87))
       lastFrame = -Infinity
     },
-    render(time) {
+    render(time, lightX, lightY) {
       const still = reducedMotion.matches
       const elapsed = time - lastFrame
-      if (introStart !== null && introStart < 0) introStart = time
-      const introProgress =
-        introStart === null || still ? 1 : Math.min(1, (time - introStart) / introDuration)
-      const spinning = introProgress < 1
-      if (!spinning) introStart = null
-      if (
-        !spinning &&
-        still === wasStill &&
-        (still ? Number.isFinite(lastFrame) : elapsed < 1 / 30)
-      )
-        return
+      if (still === wasStill && (still ? Number.isFinite(lastFrame) : elapsed < 1 / 75)) return
       const scroll = window.scrollY
       // Ignore large gaps after a resize or returning to a hidden tab.
       if (!still && !wasStill && elapsed > 0 && elapsed < 0.15) {
         const scrollSpeed = Math.abs(scroll - previousScroll) / elapsed
-        const targetSpeed = idleSpeed + Math.min(scrollSpeed / 1500, 1.25)
-        const response = targetSpeed > speed ? 12 : 4
-        speed += (targetSpeed - speed) * -Math.expm1(-response * elapsed)
+        const fling = Math.max(-6, Math.min(6, (pushX + pushY * 0.35) * 0.012))
+        speed += fling
+        const floor = Math.sign(speed || 1) * (idleSpeed + Math.min(scrollSpeed / 1500, 1.25))
+        speed = floor + (speed - floor) * Math.exp(-2.2 * elapsed)
+        if (Math.abs(speed) < idleSpeed) speed = Math.sign(speed || 1) * idleSpeed
         angle = (angle + speed * elapsed) % (2 * Math.PI)
+        const follow = -Math.expm1(-14 * elapsed)
+        tilt = { x: tilt.x + (aim.x - tilt.x) * follow, y: tilt.y + (aim.y - tilt.y) * follow }
       } else {
         speed = idleSpeed
       }
+      pushX = 0
+      pushY = 0
       previousScroll = scroll
       lastFrame = time
       wasStill = still
-      const spin = introTurns * 2 * Math.PI * (1 - introProgress) ** 4
-      const yaw = still ? restingAngle : angle - spin
-      const pitch = 0.1 + (still ? 0 : Math.sin(angle) * 0.075)
+      const yaw = still ? restingAngle : angle + tilt.x * 0.9
+      const pitch = 0.1 + (still ? 0 : Math.sin(angle) * 0.075 + tilt.y * 0.8)
       gl.uniform2f(pose, yaw, pitch)
+      gl.uniform1f(uTime, still ? 0 : time)
+      const glow = -Math.expm1(-6 * Math.max(0, Math.min(elapsed, 0.1)))
+      const target = inside ? { x: lightX, y: lightY } : { x: 0, y: 0 }
+      light = {
+        x: light.x + (target.x - light.x) * glow,
+        y: light.y + (target.y - light.y) * glow,
+      }
+      gl.uniform2f(uLight, still ? 0 : light.x, still ? 0 : light.y)
       gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
       gl.drawElements(gl.TRIANGLES, mesh.indices.length, gl.UNSIGNED_SHORT, 0)
     },
     dispose() {
+      window.removeEventListener("pointermove", onPointer)
+      document.documentElement.removeEventListener("pointerleave", onLeave)
       gl.deleteBuffer(vertices)
       gl.deleteBuffer(indices)
       gl.deleteProgram(program)
